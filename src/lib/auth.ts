@@ -63,7 +63,6 @@ async function authenticateUser(email: string, password: string) {
     const loginResponse = await authService.login({ email, password });
 
     if (loginResponse.success && loginResponse.data !== undefined) {
-      console.log('loginResponse', loginResponse);
       // Decodificar la informaciÃ³n del token
       const userData: JWT | null = await validateUserFromToken(loginResponse.data);
       if (!userData) {
@@ -89,7 +88,6 @@ async function authenticateUser(email: string, password: string) {
       throw new Error('Error de autenticaciÃ³n. Verifique sus credenciales.');
     }
   } catch (error) {
-    console.error('Backend authentication failed:', error);
     throw new Error('Error de autenticaciÃ³n. Verifique sus credenciales.');
   }
 
@@ -102,17 +100,12 @@ async function authenticateUser(email: string, password: string) {
 async function validateUserFromToken(token: string): Promise<JWT | null> {
   try {
     if (!token || typeof token !== 'string') {
-      console.error('[AUTH] Token vacÃ­o o no es string:', token);
       return null;
     }
 
     const parts = token.split('.');
     if (parts.length !== 3) {
       // corrige la condiciÃ³n invertida
-      console.error('[AUTH] Token invÃ¡lido: formato incorrecto', {
-        partsLength: parts.length,
-        tokenPreview: token.slice(0, 60),
-      });
       return null;
     }
 
@@ -136,8 +129,6 @@ async function validateUserFromToken(token: string): Promise<JWT | null> {
 
     return jwtData;
   } catch (error) {
-    console.error('[AUTH] Error decodificando token:', error);
-    console.error('[AUTH] Token que fallÃ³:', token);
     return null;
   }
 }
@@ -196,7 +187,6 @@ export const authOptions: NextAuthOptions = {
 
           return null;
         } catch (error: any) {
-          console.error('Error en login:', error);
           throw new Error(error.message || 'Error de autenticaciÃ³n');
         }
       },

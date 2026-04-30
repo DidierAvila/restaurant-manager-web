@@ -19,7 +19,6 @@ export function useUserPersonalFields(userId: string) {
   const loadPersonalFields = useCallback(async () => {
     if (!userId) return;
 
-    console.warn('Funcionalidad de campos personales temporalmente deshabilitada');
     setPersonalFields([]);
     setIsLoading(false);
     setError(null);
@@ -28,7 +27,6 @@ export function useUserPersonalFields(userId: string) {
   // Crear campo personal - temporalmente deshabilitado
   const createPersonalField = useCallback(
     async (fieldData: CreateUserPersonalFieldDto): Promise<UserPersonalField | undefined> => {
-      console.warn('Funcionalidad de creaciÃ³n de campos personales temporalmente deshabilitada');
       return undefined;
     },
     []
@@ -40,9 +38,6 @@ export function useUserPersonalFields(userId: string) {
       fieldId: string,
       fieldData: UpdateUserPersonalFieldDto
     ): Promise<UserPersonalField | undefined> => {
-      console.warn(
-        'Funcionalidad de actualizaciÃ³n de campos personales temporalmente deshabilitada'
-      );
       return undefined;
     },
     []
@@ -50,14 +45,12 @@ export function useUserPersonalFields(userId: string) {
 
   // Eliminar campo personal - temporalmente deshabilitado
   const deletePersonalField = useCallback(async (fieldId: string): Promise<boolean> => {
-    console.warn('Funcionalidad de eliminaciÃ³n de campos personales temporalmente deshabilitada');
     return false;
   }, []);
 
   // Guardar valor de campo - temporalmente deshabilitado
   const saveFieldValue = useCallback(
     async (fieldName: string, value: FieldValue): Promise<boolean> => {
-      console.warn('Funcionalidad de guardado de valores temporalmente deshabilitada');
       return false;
     },
     [userId]
@@ -65,7 +58,6 @@ export function useUserPersonalFields(userId: string) {
 
   // Cargar valores de campos - temporalmente deshabilitado
   const loadFieldValues = useCallback(async (): Promise<Record<string, any>> => {
-    console.warn('Funcionalidad de carga de valores temporalmente deshabilitada');
     return {};
   }, [userId]);
 

@@ -163,7 +163,6 @@ export function UserProvider({ children }: UserProviderProps) {
     } catch (error) {
       // No llamar handleError para evitar el bucle de sesiÃ³n expirada
       // Solo establecer el error local
-      console.log('âš ï¸ [USER] Error al cargar la configuraciÃ³n del usuario:', error);
       setError('Error al cargar la configuraciÃ³n del usuario');
 
       // Usar configuraciÃ³n bÃ¡sica como fallback
@@ -209,14 +208,6 @@ export function UserProvider({ children }: UserProviderProps) {
 
   // Efecto para cargar la configuraciÃ³n cuando el usuario se autentica
   useEffect(() => {
-    console.log('ðŸ”„ UserContext useEffect: Evaluando condiciones:', {
-      status,
-      hasSessionUser: !!session?.user,
-      hasStateUser: !!state.user,
-      isAuthenticated,
-      authLoading,
-      sessionUserEmail: session?.user?.email,
-    });
 
     if (status === 'authenticated' && session?.user && !state.user) {
       loadUserConfiguration();

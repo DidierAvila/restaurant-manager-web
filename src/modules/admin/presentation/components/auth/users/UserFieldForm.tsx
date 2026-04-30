@@ -192,7 +192,6 @@ export const UserFieldForm: React.FC<UserFieldFormProps> = ({
       await onSave(formData);
       handleClose();
     } catch (error) {
-      console.error('Error saving field:', error);
     } finally {
       setIsSaving(false);
     }

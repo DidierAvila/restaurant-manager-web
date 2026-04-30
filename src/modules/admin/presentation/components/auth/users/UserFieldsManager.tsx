@@ -122,7 +122,6 @@ export function UserFieldsManager({ userId }: UserFieldsManagerProps) {
       }
       handleCloseForm(); // Cerrar formulario despuÃ©s de guardar exitosamente
     } catch (error) {
-      console.error('Error saving field:', error);
       // El error se maneja en el hook
     }
   };
@@ -151,7 +150,6 @@ export function UserFieldsManager({ userId }: UserFieldsManagerProps) {
       setDeleteDialogOpen(false);
       setFieldToDelete(null);
     } catch (error) {
-      console.error('Error deleting field:', error);
     }
   };
 
@@ -161,7 +159,6 @@ export function UserFieldsManager({ userId }: UserFieldsManagerProps) {
       await duplicateField(field.id);
       setMenuAnchor(null);
     } catch (error) {
-      console.error('Error duplicating field:', error);
     }
   };
 
@@ -171,7 +168,6 @@ export function UserFieldsManager({ userId }: UserFieldsManagerProps) {
       await toggleFieldStatus(field.id, !field.isActive);
       setMenuAnchor(null);
     } catch (error) {
-      console.error('Error toggling field status:', error);
     }
   };
 

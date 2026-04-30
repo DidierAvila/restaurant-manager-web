@@ -163,16 +163,16 @@ export default function DashboardPage() {
           </Typography>
           <Box mt={2}>
             <Typography variant="body2" color="text.secondary">
-              â€¢ Nueva empresa
+              Nueva Plato
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              â€¢ Generar reporte
+              Generar reporte
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              â€¢ Crear evaluación
+              Crear Orden
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              â€¢ Gestionar usuarios
+              Gestionar usuarios
             </Typography>
           </Box>
         </Paper>

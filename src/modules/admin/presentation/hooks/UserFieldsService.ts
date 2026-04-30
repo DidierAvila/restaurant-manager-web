@@ -39,9 +39,6 @@ export class UserFieldsService {
    */
   static async getUserFields(userId: string): Promise<UserField[]> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
-    console.warn(
-      'Funcionalidad de campos dinÃ¡micos temporalmente deshabilitada durante la migraciÃ³n'
-    );
     return [];
 
     /*
@@ -74,7 +71,6 @@ export class UserFieldsService {
         lastUpdated: new Date(user.updatedAt || user.createdAt),
       };
     } catch (error) {
-      console.error('Error loading User fields config:', error);
       throw error;
     }
     */
@@ -86,9 +82,6 @@ export class UserFieldsService {
    */
   static async getAllUsersWithFields(): Promise<UserFieldsConfig[]> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
-    console.warn(
-      'Funcionalidad de campos dinÃ¡micos temporalmente deshabilitada durante la migraciÃ³n'
-    );
     return [];
   }
 

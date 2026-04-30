@@ -232,7 +232,6 @@ const UserTypesManagement: React.FC = () => {
 
       await getUserTypes(filters);
     } catch (err) {
-      console.error('Error loading user types:', err);
       enqueueSnackbar('Error al cargar tipos de usuario', { variant: 'error' });
     }
   };
@@ -406,7 +405,6 @@ const UserTypesManagement: React.FC = () => {
         await updateUserType(selectedUserType.id.value, userTypeVO);
         enqueueSnackbar('Tipo de usuario actualizado exitosamente', { variant: 'success' });
       } else {
-        console.error('Edit mode but no selectedUserType:', { dialogMode, selectedUserType });
         enqueueSnackbar('Error: No se pudo identificar el tipo de usuario a editar', {
           variant: 'error',
         });
@@ -417,7 +415,6 @@ const UserTypesManagement: React.FC = () => {
       await loadUserTypes();
       handleCloseDialog();
     } catch (err: any) {
-      console.error('Error saving user type:', err);
       const errorMessage =
         err?.response?.data?.message || err?.message || 'Error al guardar el tipo de usuario';
       enqueueSnackbar(errorMessage, { variant: 'error' });
@@ -451,7 +448,6 @@ const UserTypesManagement: React.FC = () => {
         await loadUserTypes();
       }
     } catch (err: any) {
-      console.error('Error deleting user type:', err);
       const errorMessage =
         err?.response?.data?.message || err?.message || 'Error al eliminar el tipo de usuario';
       enqueueSnackbar(errorMessage, { variant: 'error' });
@@ -468,7 +464,6 @@ const UserTypesManagement: React.FC = () => {
       await deleteUserType(userTypeId);
       enqueueSnackbar('Tipo de usuario eliminado exitosamente', { variant: 'success' });
     } catch (error) {
-      console.error('Error deleting userType:', error);
       enqueueSnackbar('Error al eliminar el tipo de usuario', { variant: 'error' });
     }
   };

@@ -112,7 +112,6 @@ export const UserProfile: React.FC = () => {
         throw new Error('No se pudieron cargar los datos del usuario');
       }
     } catch (err) {
-      console.error('Error loading user data:', err);
       setError('Error al cargar los datos del usuario');
     } finally {
       setLoading(false);
@@ -134,7 +133,6 @@ export const UserProfile: React.FC = () => {
       });
       setDynamicFieldValues(initialValues);
     } catch (err) {
-      console.error('Error loading dynamic fields:', err);
       // No mostramos error ya que los campos dinÃ¡micos son opcionales
     }
   };
@@ -176,7 +174,6 @@ export const UserProfile: React.FC = () => {
       setEditMode(false);
       enqueueSnackbar('Perfil actualizado exitosamente', { variant: 'success' });
     } catch (err) {
-      console.error('Error saving user data:', err);
       enqueueSnackbar('Error al guardar los cambios', { variant: 'error' });
     } finally {
       setSaving(false);

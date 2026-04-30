@@ -208,7 +208,6 @@ const UsersManagement: React.FC = () => {
         pageSize,
       });
     } catch (err) {
-      console.error('Error loading users:', err);
     }
   };
 
@@ -223,7 +222,6 @@ const UsersManagement: React.FC = () => {
         setRoles([]);
       }
     } catch (err) {
-      console.error('Error al cargar roles:', err);
       setRoles([]);
       setError('Error al cargar los roles. Por favor, intente nuevamente.');
     }
@@ -240,7 +238,6 @@ const UsersManagement: React.FC = () => {
         setUserTypes([]);
       }
     } catch (err) {
-      console.error('Error al cargar tipos de usuario:', err);
       setError('Error al cargar los tipos de usuario. Por favor, intente nuevamente.');
       // Asegurar que userTypes sea un array vacÃ­o en caso de error
       setUserTypes([]);
@@ -293,13 +290,11 @@ const UsersManagement: React.FC = () => {
         status: formData.status,
       });
 
-      console.log('ðŸš€ [USERS] Creando usuario con DDD hook:', userData.toPrimitives());
 
       // Usar el hook DDD para crear el usuario
       const result = await createUser(userData);
 
       if (result) {
-        console.log('âœ… [USERS] Usuario creado exitosamente con DDD');
         setUserCreatedSuccessfully(true);
         setSearchTerm((formData.email || '').trim()); // Filtrar por el email del usuario creado
         await loadUsers(); // Recargar la lista
@@ -308,21 +303,17 @@ const UsersManagement: React.FC = () => {
         enqueueSnackbar('Usuario creado exitosamente', { variant: 'success' });
       } else {
         const errorMessage = dddError || 'Error al crear el usuario';
-        console.error('âŒ [USERS] Error en creaciÃ³n con DDD:', errorMessage);
         setError(errorMessage);
       }
     } catch (err: any) {
-      console.error('[USERS] Error creating user with DDD:', err);
       const errorMessage = err?.message || 'Error de conexión al crear el usuario';
       setError(errorMessage);
     }
   };
 
   const handleUpdateUser = async (): Promise<void> => {
-    console.log('[UPDATE] Iniciando actualizaciÃ³n de usuario');
 
     if (!selectedUser) {
-      console.error('[UPDATE] No hay usuario seleccionado para actualizar');
       setError('No hay usuario seleccionado para actualizar');
       return;
     }
@@ -331,8 +322,6 @@ const UsersManagement: React.FC = () => {
       // El formulario usa string para email; tomar el valor directamente
       const emailValue = formData.email;
 
-      console.log('[UPDATE] Email original:', formData.email);
-      console.log('[UPDATE] Email extraído:', emailValue);
 
       // Preparar datos para enviar al backend - solo incluir campos que no sean null/undefined
       const userData: any = {
@@ -356,19 +345,12 @@ const UsersManagement: React.FC = () => {
       }
 
       // Extraer el valor del ID correctamente (puede ser un objeto UserId o un string)
-      console.log('[UPDATE] selectedUser completo:', selectedUser);
-      console.log('[UPDATE] selectedUser.id:', selectedUser.id);
-      console.log('[UPDATE] typeof selectedUser.id:', typeof selectedUser.id);
-      console.log('[UPDATE] selectedUser.id?.value:', selectedUser.id?.value);
 
       const userIdValue: string =
         typeof selectedUser.id === 'string' ? selectedUser.id : selectedUser.id.value;
 
-      console.log('[UPDATE] ID extraído para actualización:', userIdValue);
-      console.log('[UPDATE] ¿ID es válido?:', !!userIdValue);
 
       if (!userIdValue) {
-        console.error('âŒ [UPDATE] ID del usuario está vacío o es inválido');
         setError('Error: ID del usuario no válido');
         return;
       }
@@ -386,11 +368,9 @@ const UsersManagement: React.FC = () => {
         // Recargar la lista de usuarios para reflejar los cambios
         await loadUsers();
       } catch (error: any) {
-        console.error('[UPDATE] Error durante la actualizaciÃ³n:', error?.message);
         setError(`Error al actualizar el usuario: ${error?.message || 'Error desconocido'}`);
       }
     } catch (error: any) {
-      console.error('[UPDATE] Error general:', error?.message);
       setError(`Error inesperado: ${error?.message || 'Error desconocido'}`);
     } finally {
       setLoading(false);
@@ -505,29 +485,15 @@ const UsersManagement: React.FC = () => {
     if (user) {
       if (mode === 'view' || mode === 'edit') {
         // En modo 'view' o 'edit', SIEMPRE obtener la información completa del usuario desde el backend
-        console.log(
-          `ðŸ” [${mode.toUpperCase()}] Obteniendo información completa del usuario desde backend:`,
-          user.id
-        );
 
         const fullUser = await getUserById(typeof user.id === 'string' ? user.id : user.id.value);
-        console.log(
-          `âœ… [${mode.toUpperCase()}] Usuario completo obtenido desde backend:`,
-          fullUser
-        );
-        console.log(`ðŸ” [${mode.toUpperCase()}] fullUser.email:`, fullUser.email);
-        console.log(`ðŸ” [${mode.toUpperCase()}] typeof fullUser.email:`, typeof fullUser.email);
-        console.log(`ðŸ” [${mode.toUpperCase()}] fullUser.email?.value:`, fullUser.email?.value);
 
         // Extraer los IDs de los roles del usuario completo
         const userRoleIds = fullUser.roleIds || [];
-        console.log(`ðŸ” [${mode.toUpperCase()}] IDs de roles del usuario:`, fullUser.roleIds);
-        console.log(`ðŸ” [${mode.toUpperCase()}] IDs de roles extraídos:`, userRoleIds);
 
         // Extraer el email correctamente (puede ser un objeto con propiedad value o un string)
         const emailValue =
           typeof fullUser.email === 'string' ? fullUser.email : (fullUser.email?.value ?? '');
-        console.log(`ðŸ” [${mode.toUpperCase()}] Email extraído:`, emailValue);
 
         setFormData({
           name: fullUser.name || '',
@@ -598,11 +564,6 @@ const UsersManagement: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: { [key: string]: string } = {};
 
-    console.log('ðŸ” [VALIDATION] Validando formulario...');
-    console.log('ðŸ” [VALIDATION] formData completo:', formData);
-    console.log('ðŸ” [VALIDATION] formData.email:', formData.email);
-    console.log('ðŸ” [VALIDATION] typeof formData.email:', typeof formData.email);
-    console.log('ðŸ” [VALIDATION] formData.email.trim():', formData.email?.trim?.());
 
     if (!formData.name || typeof formData.name !== 'string' || !formData.name.trim()) {
       errors.name = 'El nombre es requerido';
@@ -611,24 +572,12 @@ const UsersManagement: React.FC = () => {
     // El formulario usa string para email; tomar el valor directamente
     const emailValue = formData.email;
 
-    console.log('ðŸ” [VALIDATION] Email extraÃ­do para validaciÃ³n:', emailValue);
-    console.log('ðŸ” [VALIDATION] typeof emailValue:', typeof emailValue);
 
     if (!emailValue || typeof emailValue !== 'string' || !emailValue.trim()) {
-      console.log('âŒ [VALIDATION] Email fallÃ³ validaciÃ³n:', {
-        originalEmail: formData.email,
-        extractedEmail: emailValue,
-        type: typeof emailValue,
-        isEmpty: !emailValue,
-        isNotString: typeof emailValue !== 'string',
-        trimEmpty: !emailValue?.trim?.(),
-      });
       errors.email = 'El email es requerido';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
-      console.log('âŒ [VALIDATION] Email formato invÃ¡lido:', emailValue);
       errors.email = 'El email no tiene un formato vÃ¡lido';
     } else {
-      console.log('âœ… [VALIDATION] Email vÃ¡lido:', emailValue);
     }
 
     if (!formData.userTypeId) {
@@ -639,7 +588,6 @@ const UsersManagement: React.FC = () => {
       errors.roleIds = 'Debe seleccionar al menos un rol';
     }
 
-    console.log('ðŸ” [VALIDATION] Errores encontrados:', errors);
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -647,17 +595,13 @@ const UsersManagement: React.FC = () => {
   const handleSaveUser = async () => {
     const isValid = validateForm();
     if (!isValid) {
-      console.log('âŒ [SAVE] ValidaciÃ³n fallÃ³, no se procede con el guardado');
       return;
     }
 
-    console.log('âœ… [SAVE] ValidaciÃ³n exitosa, procediendo con el guardado...');
 
     if (dialogMode === 'create') {
-      console.log('ðŸ†• [SAVE] Ejecutando creaciÃ³n de usuario...');
       await handleCreateUser();
     } else if (dialogMode === 'edit') {
-      console.log('âœï¸ [SAVE] Ejecutando actualizaciÃ³n de usuario...');
       await handleUpdateUser();
     }
   };
@@ -1418,8 +1362,6 @@ const UsersManagement: React.FC = () => {
           {dialogMode !== 'view' && (
             <Button
               onClick={() => {
-                console.log('ðŸ–±ï¸ [BUTTON] BotÃ³n Guardar clickeado!');
-                console.log('ðŸ–±ï¸ [BUTTON] Modo actual:', dialogMode);
                 handleSaveUser();
               }}
               variant="contained"

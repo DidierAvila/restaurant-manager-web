@@ -64,7 +64,6 @@ export const UserDynamicFields: React.FC<UserDynamicFieldsProps> = ({ userId }) 
       });
       setFieldValues(initialValues);
     } catch (err) {
-      console.error('Error loading dynamic fields:', err);
       setError('Error al cargar los campos dinÃ¡micos');
     } finally {
       setLoading(false);
@@ -83,7 +82,6 @@ export const UserDynamicFields: React.FC<UserDynamicFieldsProps> = ({ userId }) 
       setEditMode(false);
       enqueueSnackbar('Campos dinámicos actualizados exitosamente', { variant: 'success' });
     } catch (err) {
-      console.error('Error saving dynamic fields:', err);
       enqueueSnackbar('Error al guardar los campos dinámicos', { variant: 'error' });
     } finally {
       setSaving(false);

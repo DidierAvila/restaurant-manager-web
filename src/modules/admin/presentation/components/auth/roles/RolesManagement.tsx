@@ -173,7 +173,6 @@ const RolesManagement: React.FC = () => {
       setTotalPages(response.totalPages || 1);
       setTotalItems(response.totalRecords || 0);
     } catch (err) {
-      console.error('Error loading roles:', err);
       setError('Error al cargar los roles. Por favor, intente nuevamente.');
     } finally {
       setLoading(false);
@@ -247,9 +246,7 @@ const RolesManagement: React.FC = () => {
       );
 
       setPermissions(mappedPermissions);
-      console.log('âœ… Permisos cargados desde el backend:', mappedPermissions);
     } catch (error) {
-      console.error('âŒ Error cargando permisos:', error);
       // Mantener permisos de ejemplo como fallback
       setPermissions([
         {
@@ -390,7 +387,6 @@ const RolesManagement: React.FC = () => {
 
   const handleEditRole = async () => {
     if (!selectedRole) {
-      console.error('No hay rol seleccionado para editar');
       return;
     }
 
@@ -406,12 +402,10 @@ const RolesManagement: React.FC = () => {
       });
       setOpenDialog(true);
 
-      console.log('ðŸ”„ Cargando datos del rol:', selectedRole.id);
 
       // Cargar datos completos del rol desde el backend
       const roleData = await rolesService.getById(selectedRole.id);
 
-      console.log('âœ… Datos del rol cargados:', roleData);
 
       // Mapear los permisos del rol a IDs para el formulario
       const rolePermissionIds = roleData.permissions.map(
@@ -425,7 +419,6 @@ const RolesManagement: React.FC = () => {
         status: roleData.status,
       });
     } catch (error) {
-      console.error('âŒ Error cargando datos del rol:', error);
 
       // Fallback a los datos bÃ¡sicos del rol de la lista
       setFormData({
@@ -459,7 +452,6 @@ const RolesManagement: React.FC = () => {
    * Abrir diÃ¡logo de confirmación para eliminar rol
    */
   const handleOpenDeleteDialog = () => {
-    console.log('ðŸ”“ [DEBUG] Abriendo diÃ¡logo de eliminaciÃ³n para rol:', selectedRole);
     setOpenDeleteDialog(true);
     // NO llamamos handleMenuClose() aquí­ para mantener selectedRole
     setAnchorEl(null); // Solo cerramos el menÃº, pero mantenemos selectedRole
@@ -469,7 +461,6 @@ const RolesManagement: React.FC = () => {
    * Cerrar diÃ¡logo de confirmaciÃ³n para eliminar rol
    */
   const handleCloseDeleteDialog = () => {
-    console.log('ðŸ”’ [DEBUG] Cerrando diÃ¡logo de eliminaciÃ³n');
     setOpenDeleteDialog(false);
     setSelectedRole(null); // Limpiar selectedRole al cerrar el diÃ¡logo
   };
@@ -478,45 +469,30 @@ const RolesManagement: React.FC = () => {
    * Manejar eliminaciÃ³n de rol
    */
   const handleDeleteRole = async () => {
-    console.log('ðŸš€ [DEBUG] handleDeleteRole iniciado');
-    console.log('ðŸš€ [DEBUG] selectedRole:', selectedRole);
 
     if (!selectedRole) {
-      console.log('âŒ [DEBUG] No hay rol seleccionado');
       return;
     }
 
     try {
-      console.log('ðŸ”„ [DEBUG] Iniciando proceso de eliminaciÃ³n...');
       setError(null); // Limpiar errores previos
       setLoading(true); // Mostrar indicador de carga
-      console.log('ðŸ”„ [DEBUG] Loading establecido a true');
 
-      console.log('ðŸ—‘ï¸ [DEBUG] Eliminando rol con ID:', selectedRole.id);
       const response = await rolesService.delete(selectedRole.id);
-      console.log('ðŸ“¥ [DEBUG] Respuesta de eliminaciÃ³n:', response);
 
       // Verificar si la respuesta es exitosa o si no tiene una propiedad success (algunas APIs solo devuelven datos)
       if (response.success || !('success' in response)) {
-        console.log('[DEBUG] Rol eliminado exitosamente');
-        console.log('[DEBUG] Recargando lista de roles...');
         await loadRoles(); // Recargar la lista
-        console.log('[DEBUG] Lista recargada, cerrando diálogo...');
         handleCloseDeleteDialog(); // Cerrar el diálogo de confirmación
-        console.log('âœ… [DEBUG] Proceso completado exitosamente');
       } else {
         const errorMessage = response.message || 'Error al eliminar el rol';
-        console.error('âŒ [DEBUG] Error en respuesta:', errorMessage);
         setError(errorMessage);
       }
     } catch (err: any) {
-      console.error('[DEBUG] Error en catch:', err);
       const errorMessage =
         err?.response?.data?.message || err?.message || 'Error de conexión al eliminar el rol';
-      console.error('[DEBUG] Mensaje de error:', errorMessage);
       setError(errorMessage);
     } finally {
-      console.log('[DEBUG] Finally ejecutado, estableciendo loading a false');
       setLoading(false);
     }
   };
@@ -555,28 +531,20 @@ const RolesManagement: React.FC = () => {
         permissionIds: formData.permissions, // Usar permissionIds como espera la API
       };
 
-      console.log('Guardando rol:', {
-        mode: dialogMode,
-        roleData,
-        selectedRoleId: selectedRole?.id,
-      });
 
       if (dialogMode === 'create') {
         await rolesService.create(roleData);
-        console.log('Rol creado exitosamente');
       } else if (dialogMode === 'edit' && selectedRole) {
         await rolesService.update({
           ...roleData,
           id: selectedRole.id,
         });
-        console.log('Rol actualizado exitosamente');
       }
 
       // Recargar la lista de roles
       await loadRoles();
       handleCloseDialog();
     } catch (err) {
-      console.error('Error al guardar rol:', err);
       setError(err instanceof Error ? err.message : 'Error al guardar el rol');
     } finally {
       setLoading(false);
@@ -1080,7 +1048,6 @@ const RolesManagement: React.FC = () => {
           </Button>
           <Button
             onClick={() => {
-              console.log('ðŸ–±ï¸ [DEBUG] BotÃ³n Eliminar clickeado - evento onClick ejecutado');
               handleDeleteRole();
             }}
             color="error"

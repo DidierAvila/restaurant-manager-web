@@ -106,7 +106,6 @@ export const useUserTypes = (): UseUserTypesReturn => {
         sortBy: result.sortBy,
       });
     } catch (err) {
-      console.error('Error in getUserTypes:', err);
       setError(err instanceof Error ? err.message : 'Error al obtener tipos de usuario');
     } finally {
       setLoading(false);
@@ -138,7 +137,6 @@ export const useUserTypes = (): UseUserTypesReturn => {
       const result = await createUserTypeUseCase.execute(createData);
       return result;
     } catch (err) {
-      console.error('Error creating userType:', err);
       setError(err instanceof Error ? err.message : 'Error al crear tipo de usuario');
       throw err;
     } finally {
@@ -184,7 +182,6 @@ export const useUserTypes = (): UseUserTypesReturn => {
       const userTypeId = UserTypeId.fromString(id);
       await deleteUserTypeUseCase.execute(userTypeId);
     } catch (err) {
-      console.error('Error deleting userType:', err);
       setError(err instanceof Error ? err.message : 'Error al eliminar tipo de usuario');
       throw err;
     } finally {

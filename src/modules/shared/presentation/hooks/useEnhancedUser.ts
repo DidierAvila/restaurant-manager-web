@@ -105,9 +105,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
 
     // âŒ NO es error de red si tiene status HTTP vÃ¡lido (incluyendo 401, 403, etc.)
     if (error.status && error.status >= 400 && error.status < 600) {
-      console.log(
-        `ðŸ” Error HTTP ${error.status} - NO es error de red, es error del servidor/permisos`
-      );
       return false;
     }
 
@@ -154,7 +151,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
         userTypeName: payload.userTypeName,
       };
     } catch (error) {
-      console.error('Error extracting token data:', error);
       return null;
     }
   }
@@ -164,13 +160,11 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
    */
   const loadMeData = useCallback(async () => {
     if (!session?.accessToken || session.accessToken.startsWith('oauth-temp-')) {
-      console.log('âš ï¸ No se puede cargar datos /me: token no disponible o temporal');
       return;
     }
 
     // Validar que el token tenga datos bÃ¡sicos
     if (!tokenData) {
-      console.log('âš ï¸ No se puede cargar datos /me: datos del token no disponibles');
       return;
     }
 
@@ -179,27 +173,20 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
     setMeAttempted(true);
 
     try {
-      console.log('ðŸ”„ Cargando configuraciÃ³n del usuario desde /me...');
       const data = await AuthPermissionService.getCurrentUserConfiguration();
       setMeData(data);
       setConnectionFailed(false); // Reset en caso de Ã©xito
       setRetryCount(0); // Reset contador
       setCircuitBreakerOpen(false); // Cerrar circuit breaker en caso de Ã©xito
-      console.log('âœ… ConfiguraciÃ³n del usuario cargada exitosamente');
     } catch (error: any) {
-      console.error('âŒ Error al cargar configuraciÃ³n del usuario:', error);
 
       // ðŸ” ERRORES DE AUTORIZACIÃ“N/PERMISOS (401, 403) - No reintentar
       if (error?.status === 401) {
-        console.info('ðŸ”’ Sin permisos para endpoint /me (401) - continuando con datos del token');
         setMeError(null); // No mostrar como error, es comportamiento esperado
         setConnectionFailed(false);
         setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
         // NO incrementar retryCount, NO activar circuit breaker
       } else if (error?.status === 403) {
-        console.info(
-          'ðŸš« Acceso denegado al endpoint /me (403) - continuando con datos del token'
-        );
         setMeError(null); // No mostrar como error, es comportamiento esperado
         setConnectionFailed(false);
         setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
@@ -207,16 +194,12 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
       }
       // ðŸŒ ERRORES DE RED - SÃ­ reintentar con circuit breaker
       else if (isNetworkError(error)) {
-        console.warn('ðŸŒ Error de conexión de red detectado (sin respuesta del servidor)');
         setConnectionFailed(true);
 
         const newRetryCount = retryCount + 1;
         setRetryCount(newRetryCount);
 
         if (newRetryCount >= MAX_RETRY_ATTEMPTS) {
-          console.warn(
-            `ðŸš¨ MÃ¡ximo de reintentos alcanzado (${MAX_RETRY_ATTEMPTS}). Activando circuit breaker.`
-          );
           setCircuitBreakerOpen(true);
           setMeError('Sin conexión a internet. La aplicación funcionará con datos básicos.');
         } else {
@@ -225,9 +208,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
       }
       // ðŸ”§ OTROS ERRORES DEL SERVIDOR (4xx, 5xx) - No reintentar
       else {
-        console.warn(
-          `âš ï¸ Error del servidor (${error?.status || 'desconocido'}) - no se reintentarÃ¡`
-        );
         setMeError('Error del servidor al cargar configuraciÃ³n adicional');
         setConnectionFailed(false);
         // NO incrementar retryCount, NO activar circuit breaker
@@ -246,7 +226,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
   useEffect(() => {
     // No hacer nada si el circuit breaker estÃ¡ abierto
     if (circuitBreakerOpen) {
-      console.warn('ðŸ”Œ Circuit breaker abierto: no se intentarÃ¡ cargar /me');
       return;
     }
 
@@ -254,17 +233,14 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
     const shouldLoadMeData = isAuthenticated && tokenData && !meData && !meLoading && !meAttempted;
 
     if (shouldLoadMeData) {
-      console.log('ðŸš€ Iniciando carga de datos adicionales del usuario...');
 
       // Llamar directamente a loadMeData sin depender del callback
       const loadData = async () => {
         if (!session?.accessToken || session.accessToken.startsWith('oauth-temp-')) {
-          console.log('âš ï¸ No se puede cargar datos /me: token no disponible o temporal');
           return;
         }
 
         if (!tokenData) {
-          console.log('âš ï¸ No se puede cargar datos /me: datos del token no disponibles');
           return;
         }
 
@@ -273,7 +249,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
         setMeAttempted(true);
 
         try {
-          console.log('ðŸ”„ Cargando configuraciÃ³n del usuario desde /me...');
           const data = await AuthPermissionService.getCurrentUserConfiguration(
             session?.accessToken
           );
@@ -281,23 +256,15 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
           setConnectionFailed(false);
           setRetryCount(0);
           setCircuitBreakerOpen(false);
-          console.log('âœ… ConfiguraciÃ³n del usuario cargada exitosamente');
         } catch (error: any) {
-          console.error('âŒ Error al cargar configuraciÃ³n del usuario:', error);
 
           // ðŸ” ERRORES DE AUTORIZACIÃ“N/PERMISOS (401, 403) - No reintentar
           if (error?.status === 401) {
-            console.info(
-              'ðŸ”’ Sin permisos para endpoint /me (401) - continuando con datos del token'
-            );
             setMeError(null); // No mostrar como error, es comportamiento esperado
             setConnectionFailed(false);
             setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
             // NO incrementar retryCount, NO activar circuit breaker
           } else if (error?.status === 403) {
-            console.info(
-              'ðŸš« Acceso denegado al endpoint /me (403) - continuando con datos del token'
-            );
             setMeError(null); // No mostrar como error, es comportamiento esperado
             setConnectionFailed(false);
             setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
@@ -305,16 +272,12 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
           }
           // ðŸŒ ERRORES DE RED - SÃ­ reintentar con circuit breaker
           else if (isNetworkError(error)) {
-            console.warn('ðŸŒ Error de conexión de red detectado (sin respuesta del servidor)');
             setConnectionFailed(true);
 
             const newRetryCount = retryCount + 1;
             setRetryCount(newRetryCount);
 
             if (newRetryCount >= MAX_RETRY_ATTEMPTS) {
-              console.warn(
-                `ðŸš¨ MÃ¡ximo de reintentos alcanzado (${MAX_RETRY_ATTEMPTS}). Activando circuit breaker.`
-              );
               setCircuitBreakerOpen(true);
               setMeError('Sin conexión a internet. La aplicaciÃ³n funcionarÃ¡ con datos bÃ¡sicos.');
             } else {
@@ -323,9 +286,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
           }
           // ðŸ”§ OTROS ERRORES DEL SERVIDOR (4xx, 5xx) - No reintentar
           else {
-            console.warn(
-              `âš ï¸ Error del servidor (${error?.status || 'desconocido'}) - no se reintentarÃ¡`
-            );
             setMeError('Error del servidor al cargar configuraciÃ³n adicional');
             setConnectionFailed(false);
             // NO incrementar retryCount, NO activar circuit breaker
@@ -354,7 +314,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
    * Función para refrescar datos del usuario
    */
   const refreshUserData = useCallback(async () => {
-    console.log('ðŸ”„ Reintentando carga de datos del usuario...');
     setMeAttempted(false); // Reset para permitir nuevo intento
     setConnectionFailed(false); // Reset estado de conexión
     setRetryCount(0); // Reset contador de reintentos
@@ -367,7 +326,6 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
    * Función para resetear el circuit breaker manualmente
    */
   const resetConnectionState = useCallback(() => {
-    console.log('ðŸ”Œ Reseteando estado de conexión...');
     setConnectionFailed(false);
     setRetryCount(0);
     setMeAttempted(false);

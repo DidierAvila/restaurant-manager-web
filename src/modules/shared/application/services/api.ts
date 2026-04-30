@@ -300,12 +300,15 @@ export class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = this.buildURL(endpoint);
 
+    const isFormData = options.body instanceof FormData;
+    const headers = { ...this.defaultHeaders, ...options.headers };
+    if (isFormData) {
+      delete (headers as Record<string, string>)['Content-Type'];
+    }
+
     const config: RequestInit = {
       ...options,
-      headers: {
-        ...this.defaultHeaders,
-        ...options.headers,
-      },
+      headers,
       signal: AbortSignal.timeout(this.timeout),
     };
 
@@ -390,7 +393,7 @@ export class ApiService {
     return this.request<T>(endpoint, {
       ...config,
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
     });
   }
 
@@ -405,7 +408,7 @@ export class ApiService {
     return this.request<T>(endpoint, {
       ...config,
       method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
     });
   }
 
@@ -420,7 +423,7 @@ export class ApiService {
     return this.request<T>(endpoint, {
       ...config,
       method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
     });
   }
 
@@ -543,11 +546,6 @@ export class AuthService {
           errorData = { message: errorText };
         }
 
-        console.error(
-          'ðŸ” [AUTH] Error en la respuesta:',
-          response.status,
-          errorData.message || response.statusText
-        );
         return {
           success: false,
           message:
@@ -569,7 +567,6 @@ export class AuthService {
         let userRole = 'employee';
         if (tokenPayload.userTypeName) {
           const userTypeName = tokenPayload.userTypeName as string;
-          console.log('ðŸ” [AUTH] userTypeName encontrado:', userTypeName);
 
           // Mapear userTypeName a roles del sistema
           if (userTypeName === 'Administrador') {
@@ -598,7 +595,6 @@ export class AuthService {
           permissions: (tokenPayload.permission as string[]) || [],
         };
 
-        console.log('ðŸ‘¤ [AUTH] Usuario creado desde token:', user);
 
         return {
           success: true,
@@ -643,26 +639,14 @@ export class AuthService {
    */
   private decodeJWT(token: string): Record<string, unknown> {
     try {
-      // Clave JWT proporcionada
-      const jwtKey = 'A247DB24-C8AE-4B8A-8CB2-59637754BF2F';
-      console.log('ðŸ”‘ [AUTH] Decodificando token JWT con clave:', jwtKey.substring(0, 8) + '...');
-
       const parts = token.split('.');
       if (parts.length !== 3) {
-        throw new Error('Token JWT invÃ¡lido');
+        throw new Error('Token JWT inválido');
       }
-
       const payload = parts[1];
       const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
-
-      // Parsear el payload
-      const payloadObj = JSON.parse(decoded) as Record<string, unknown>;
-      console.log('ðŸ” [AUTH] Payload decodificado:', Object.keys(payloadObj).join(', '));
-
-      return payloadObj;
-    } catch (error) {
-      // Error al decodificar el token JWT
-      console.error('âŒ [AUTH] Error al decodificar token JWT:', error);
+      return JSON.parse(decoded) as Record<string, unknown>;
+    } catch {
       return {};
     }
   }

@@ -29,7 +29,6 @@ export function useUserTypeFields(userTypeId: string) {
   const loadFields = useCallback(async () => {
     if (!userTypeId) return;
 
-    console.warn('Funcionalidad de campos dinÃ¡micos de UserType temporalmente deshabilitada');
     setFields([]);
     setState((prev) => ({
       ...prev,
@@ -45,9 +44,6 @@ export function useUserTypeFields(userTypeId: string) {
   const loadConfig = useCallback(async () => {
     if (!userTypeId) return;
 
-    console.warn(
-      'Funcionalidad de configuraciÃ³n de campos de UserType temporalmente deshabilitada'
-    );
     setConfig(null);
     setFields([]);
     setState((prev) => ({
@@ -63,7 +59,6 @@ export function useUserTypeFields(userTypeId: string) {
    */
   const createField = useCallback(
     async (fieldData: CreateUserTypeFieldDto): Promise<UserTypeField | undefined> => {
-      console.warn('Funcionalidad de creaciÃ³n de campos de UserType temporalmente deshabilitada');
       return undefined;
     },
     []
@@ -75,9 +70,6 @@ export function useUserTypeFields(userTypeId: string) {
    */
   const updateField = useCallback(
     async (fieldData: UpdateUserTypeFieldDto): Promise<UserTypeField | undefined> => {
-      console.warn(
-        'Funcionalidad de actualizaciÃ³n de campos de UserType temporalmente deshabilitada'
-      );
       return undefined;
     },
     [userTypeId]
@@ -89,9 +81,6 @@ export function useUserTypeFields(userTypeId: string) {
    */
   const deleteField = useCallback(
     async (fieldId: string): Promise<boolean> => {
-      console.warn(
-        'Funcionalidad de eliminaciÃ³n de campos de UserType temporalmente deshabilitada'
-      );
       return false;
     },
     [userTypeId]
@@ -103,9 +92,6 @@ export function useUserTypeFields(userTypeId: string) {
    */
   const reorderFields = useCallback(
     async (fieldIds: string[]): Promise<UserTypeField[]> => {
-      console.warn(
-        'Funcionalidad de reordenamiento de campos de UserType temporalmente deshabilitada'
-      );
       return [];
     },
     [userTypeId]
@@ -117,7 +103,6 @@ export function useUserTypeFields(userTypeId: string) {
    */
   const toggleFieldStatus = useCallback(
     async (fieldId: string, isActive: boolean): Promise<UserTypeField | undefined> => {
-      console.warn('Funcionalidad de toggle de campos de UserType temporalmente deshabilitada');
       return undefined;
     },
     [userTypeId]
@@ -129,9 +114,6 @@ export function useUserTypeFields(userTypeId: string) {
    */
   const duplicateField = useCallback(
     async (fieldId: string, newName?: string): Promise<UserTypeField | undefined> => {
-      console.warn(
-        'Funcionalidad de duplicaciÃ³n de campos de UserType temporalmente deshabilitada'
-      );
       return undefined;
     },
     [userTypeId]

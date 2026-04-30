@@ -72,7 +72,6 @@ class RolesService {
       const data = await api.get<PermissionDropdown[]>('/Api/Auth/Permissions/dropdown');
       return data;
     } catch (error) {
-      console.error('Error fetching permissions dropdown:', error);
       throw error;
     }
   }
@@ -95,7 +94,6 @@ class RolesService {
       const data = await api.getWithParams<any>('/Api/Auth/Roles', params);
       return data;
     } catch (error) {
-      console.error('Error fetching roles:', error);
       throw error;
     }
   }
@@ -108,7 +106,6 @@ class RolesService {
       const data = await api.get<ServiceRole>(`/Api/Auth/Roles/${id}`);
       return data;
     } catch (error) {
-      console.error('Error fetching role:', error);
       throw error;
     }
   }
@@ -121,7 +118,6 @@ class RolesService {
       const data = await api.post<ServiceRole>('/Api/Auth/Roles', roleData);
       return data;
     } catch (error) {
-      console.error('Error creating role:', error);
       throw error;
     }
   }
@@ -134,7 +130,6 @@ class RolesService {
       const data = await api.put<ServiceRole>(`/Api/Auth/Roles/${roleData.id}`, roleData);
       return data;
     } catch (error) {
-      console.error('Error updating role:', error);
       throw error;
     }
   }
@@ -150,7 +145,6 @@ class RolesService {
         success: true,
       };
     } catch (error) {
-      console.error('Error deleting role:', error);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Error desconocido',

@@ -233,7 +233,6 @@ function SignInContent() {
       router.push('/auth/signin?message=Registro exitoso. Por favor, inicie sesion.');
     } catch (err) {
       setError('Error inesperado al registrar. Inténtelo nuevamente.');
-      console.error('Registration unexpected error:', err);
     } finally {
       setCredentialsLoading(false);
     }
@@ -268,13 +267,11 @@ function SignInContent() {
 
       if (result?.error) {
         setError(getErrorMessage(result.error));
-        console.error(`${providerId} OAuth error:`, result.error);
       } else if (result?.url) {
         router.push(result.url);
       }
     } catch (err) {
       setError(`Error inesperado con ${providerId}. Inténtelo nuevamente.`);
-      console.error(`${providerId} OAuth unexpected error:`, err);
     } finally {
       setLoading('');
     }

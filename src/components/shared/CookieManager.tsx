@@ -27,7 +27,6 @@ export function CookieManager({
   useEffect(() => {
     // Limpiar solo cookies problemÃ¡ticas al montar si estÃ¡ habilitado
     if (cleanOnMount) {
-      console.log('ðŸ§¹ [COOKIE_MANAGER] Limpieza inicial de cookies problemÃ¡ticas');
       clearProblematicData(); // Preserva la sesiÃ³n activa
     }
   }, [cleanOnMount]);
@@ -35,7 +34,6 @@ export function CookieManager({
   useEffect(() => {
     // Limpiar TODAS las cookies cuando el usuario se desautentica
     if (cleanOnSessionChange && status === 'unauthenticated') {
-      console.log('ðŸ§¹ [COOKIE_MANAGER] Limpieza completa por cambio de sesiÃ³n (no autenticado)');
       clearAllAuthData(); // Limpieza completa para logout
     }
   }, [status, cleanOnSessionChange]);
@@ -59,14 +57,12 @@ export function useCookieManager(
 
   useEffect(() => {
     if (cleanOnMount) {
-      console.log('ðŸ§¹ [COOKIE_HOOK] Limpieza de cookies problemÃ¡ticas al montar');
       clearProblematicData(); // Preserva la sesiÃ³n activa
     }
   }, [cleanOnMount]);
 
   useEffect(() => {
     if (status === 'authenticated' && cleanOnLogin) {
-      console.log('ðŸ§¹ [COOKIE_HOOK] Limpieza de cookies problemÃ¡ticas al autenticarse');
       // Solo limpiar cookies problemÃ¡ticas, no la sesiÃ³n actual
       setTimeout(() => {
         clearProblematicData();
@@ -74,7 +70,6 @@ export function useCookieManager(
     }
 
     if (status === 'unauthenticated' && cleanOnLogout) {
-      console.log('ðŸ§¹ [COOKIE_HOOK] Limpieza completa al desautenticarse');
       clearAllAuthData(); // Limpieza completa para logout
     }
   }, [status, cleanOnLogin, cleanOnLogout]);

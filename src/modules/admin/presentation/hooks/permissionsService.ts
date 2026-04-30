@@ -60,7 +60,6 @@ export class PermissionsService {
    */
   static async getAll(filters: PermissionFilters = {}): Promise<PermissionResponse> {
     try {
-      console.log('ðŸ” PermissionsService.getAll - Iniciando solicitud con filtros:', filters);
       const params = new URLSearchParams();
       if (filters.Name) {
         params.append('Name', filters.Name);
@@ -79,14 +78,11 @@ export class PermissionsService {
       }
 
       const url = `${this.BASE_URL}${params.toString() ? `?${params.toString()}` : ''}`;
-      console.log('ðŸŒ PermissionsService.getAll - URL construida:', url);
 
       const response = await backendApiService.get(url);
-      console.log('âœ… PermissionsService.getAll - Respuesta recibida:', response);
 
       return response as PermissionResponse;
     } catch (error) {
-      console.error('âŒ PermissionsService.getAll - Error:', error);
       throw error;
     }
   }
@@ -96,14 +92,11 @@ export class PermissionsService {
    */
   static async getById(id: string) {
     try {
-      console.log('ðŸ” PermissionsService.getById - Obteniendo permiso con ID:', id);
 
       const response = await backendApiService.get(`${this.BASE_URL}/${id}`);
-      console.log('âœ… PermissionsService.getById - Permiso obtenido:', response);
 
       return response;
     } catch (error) {
-      console.error('âŒ PermissionsService.getById - Error:', error);
       throw error;
     }
   }
@@ -113,14 +106,11 @@ export class PermissionsService {
    */
   static async create(permissionData: CreatePermissionData) {
     try {
-      console.log('ðŸ†• PermissionsService.create - Creando permiso:', permissionData);
 
       const response = await backendApiService.post(this.BASE_URL, permissionData);
-      console.log('âœ… PermissionsService.create - Permiso creado:', response);
 
       return response;
     } catch (error) {
-      console.error('âŒ PermissionsService.create - Error:', error);
       throw error;
     }
   }
@@ -130,17 +120,14 @@ export class PermissionsService {
    */
   static async update(permissionData: UpdatePermissionData) {
     try {
-      console.log('ðŸ“ PermissionsService.update - Actualizando permiso:', permissionData);
 
       const response = await backendApiService.put(
         `${this.BASE_URL}/${permissionData.id}`,
         permissionData
       );
-      console.log('âœ… PermissionsService.update - Permiso actualizado:', response);
 
       return response;
     } catch (error) {
-      console.error('âŒ PermissionsService.update - Error:', error);
       throw error;
     }
   }
@@ -150,14 +137,11 @@ export class PermissionsService {
    */
   static async delete(id: string) {
     try {
-      console.log('ðŸ—‘ï¸ PermissionsService.delete - Eliminando permiso con ID:', id);
 
       const response = await backendApiService.delete(`${this.BASE_URL}/${id}`);
-      console.log('âœ… PermissionsService.delete - Permiso eliminado:', response);
 
       return response;
     } catch (error) {
-      console.error('âŒ PermissionsService.delete - Error:', error);
       throw error;
     }
   }
@@ -167,11 +151,9 @@ export class PermissionsService {
    */
   static async search(searchTerm: string, filters: Omit<PermissionFilters, 'Name'> = {}) {
     try {
-      console.log('ðŸ” PermissionsService.search - Buscando permisos con tÃ©rmino:', searchTerm);
 
       return await this.getAll({ ...filters, Name: searchTerm });
     } catch (error) {
-      console.error('âŒ PermissionsService.search - Error:', error);
       throw error;
     }
   }

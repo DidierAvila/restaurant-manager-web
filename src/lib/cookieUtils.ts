@@ -27,7 +27,6 @@ export function clearAuthCookies(): void {
     return;
   }
 
-  console.log('ðŸ§¹ [COOKIES] Iniciando limpieza de cookies problemáticas');
 
   // Obtener todas las cookies actuales
   const allCookies = document.cookie.split(';');
@@ -95,7 +94,6 @@ export function clearAuthStorage(): void {
     return;
   }
 
-  console.log('ðŸ§¹ [STORAGE] Iniciando limpieza de storage de autenticaciÃ³n');
 
   try {
     // Limpiar localStorage
@@ -121,7 +119,6 @@ export function clearAuthStorage(): void {
       }
     });
   } catch (error) {
-    console.warn('âš ï¸ [STORAGE] Error al limpiar storage:', error);
   }
 }
 
@@ -135,7 +132,6 @@ export function clearAllAuthCookies(): void {
     return;
   }
 
-  console.log('ðŸ§¹ [COOKIES] Iniciando limpieza COMPLETA de cookies de autenticación');
 
   // Obtener todas las cookies actuales
   const allCookies = document.cookie.split(';');

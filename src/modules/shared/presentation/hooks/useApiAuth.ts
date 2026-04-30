@@ -27,13 +27,10 @@ export function useApiAuth(): UseApiAuthReturn {
 
   // Sincronizar token con ambos servicios de API
   useEffect(() => {
-    console.log('ðŸ” [AUTH] Token actualizado:', token ? 'Token presente' : 'Sin token');
     if (token) {
-      console.log('âœ… [AUTH] Configurando token en ambos servicios');
       apiService.setAuthToken(token);
       backendApiService.setAuthToken(token);
     } else {
-      console.log('ðŸ§¹ [AUTH] Limpiando tokens de ambos servicios');
       apiService.clearAuthToken();
       backendApiService.clearAuthToken();
     }

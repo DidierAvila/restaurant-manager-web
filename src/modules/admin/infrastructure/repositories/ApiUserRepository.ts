@@ -41,7 +41,6 @@ export class ApiUserRepository implements IUserRepository {
    */
   private transformApiDataToUsers(apiData: any[]): User[] {
     if (!Array.isArray(apiData)) {
-      console.error('Los datos de usuarios de la API no son un array vÃ¡lido:', apiData);
       return [];
     }
 
@@ -59,13 +58,11 @@ export class ApiUserRepository implements IUserRepository {
   private safeTransformApiItem(item: any, index: number): User | null {
     try {
       if (!item || typeof item !== 'object') {
-        console.warn(`Elemento de usuario en Ã­ndice ${index} no es un objeto vÃ¡lido:`, item);
         return null;
       }
 
       return this.adapter.fromApi(item);
     } catch (error) {
-      console.error(`Error al procesar usuario en Ã­ndice ${index}:`, error, 'Datos:', item);
       return null;
     }
   }
@@ -76,17 +73,14 @@ export class ApiUserRepository implements IUserRepository {
 
       // Validar que la respuesta contenga datos vÃ¡lidos
       if (!response) {
-        console.error('ðŸš¨ [ApiUserRepository] Respuesta del backend sin datos:', response);
         throw new Error('El backend no retornÃ³ datos del usuario');
       }
 
-      console.log('âœ… [ApiUserRepository] Datos recibidos del backend:', response);
       return this.adapter.fromApi(response as any);
     } catch (error) {
       if ((error as any)?.response?.status === 404) {
         return null;
       }
-      console.error('ðŸš¨ [ApiUserRepository] Error al obtener usuario:', error);
       throw error;
     }
   }

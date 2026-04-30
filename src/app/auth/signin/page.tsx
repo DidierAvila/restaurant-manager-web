@@ -90,8 +90,8 @@ function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
-  const [email, setEmail] = useState<string>('admin@gmail.com');
-  const [password, setPassword] = useState<string>('admin123');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -153,7 +153,6 @@ function SignInContent() {
       }
     } catch (err) {
       setError('Error inesperado al iniciar sesión. Inténtelo nuevamente.');
-      console.error('Sign in error:', err);
     } finally {
       setLoading(false);
     }

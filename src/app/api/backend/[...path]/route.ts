@@ -64,8 +64,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       // const errorData = await response.text();
-      // console.error('Backend response error:', response.status, errorData);
-
+      //
       return NextResponse.json(
         {
           success: false,
@@ -84,7 +83,6 @@ export async function GET(request: NextRequest) {
       message: 'ConfiguraciÃ³n de usuario obtenida exitosamente',
     });
   } catch (error) {
-    // console.error('Error en GET /Auth/me:', error);
     return NextResponse.json(
       {
         success: false,

@@ -347,7 +347,6 @@ const UsersList: React.FC<UsersListProps> = ({
         onUserSelect(user);
       }
       // Aquí podrías abrir un modal de detalles
-      console.log('Ver usuario:', user);
     },
     [onUserSelect]
   );
@@ -361,7 +360,6 @@ const UsersList: React.FC<UsersListProps> = ({
         onUserEdit(user);
       }
       // Aquí podrías abrir un modal de edición
-      console.log('Editar usuario:', user);
     },
     [onUserEdit]
   );
@@ -409,7 +407,6 @@ const UsersList: React.FC<UsersListProps> = ({
       onUserCreate();
     }
     // Aquí podrías abrir un modal de creación
-    console.log('Crear nuevo usuario');
   }, [onUserCreate]);
 
   /**

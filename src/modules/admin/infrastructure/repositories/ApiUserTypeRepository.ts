@@ -48,7 +48,6 @@ export class ApiUserTypeRepository implements IUserTypeRepository {
    */
   private transformApiDataToUserTypes(apiData: ApiUserType[]): UserType[] {
     if (!Array.isArray(apiData)) {
-      console.warn('API response data is not an array, returning empty array');
       return [];
     }
 
@@ -64,25 +63,17 @@ export class ApiUserTypeRepository implements IUserTypeRepository {
   private safeTransformApiItem(item: ApiUserType, index: number): UserType | null {
     try {
       if (!item || typeof item !== 'object') {
-        console.warn(
-          `Invalid API item at index ${index}: item is null, undefined, or not an object`
-        );
         return null;
       }
 
       const result = this.adapter.fromApi(item);
 
       if (result === null) {
-        console.warn(`Failed to transform API item at index ${index}: adapter returned null`);
         return null;
       }
 
       return result;
     } catch (error) {
-      console.error(`Error transforming API item at index ${index}:`, {
-        error: error instanceof Error ? error.message : 'Unknown error',
-        item: item ? { id: item.id, name: item.name } : 'Invalid item',
-      });
       return null;
     }
   }

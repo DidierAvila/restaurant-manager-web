@@ -137,7 +137,6 @@ export const UserTypeFieldsManager: React.FC<UserTypeFieldsManagerProps> = ({ us
       // Cerrar el formulario despuÃ©s del Ã©xito
       handleCloseForm();
     } catch (error) {
-      console.error('Error saving field:', error);
       throw error;
     }
   };
@@ -157,7 +156,6 @@ export const UserTypeFieldsManager: React.FC<UserTypeFieldsManagerProps> = ({ us
       setDeleteDialogOpen(false);
       setFieldToDelete(null);
     } catch (error) {
-      console.error('Error deleting field:', error);
     }
   };
 
@@ -186,7 +184,6 @@ export const UserTypeFieldsManager: React.FC<UserTypeFieldsManagerProps> = ({ us
     try {
       await reorderFields(newOrderIds);
     } catch (error) {
-      console.error('Error reordering fields:', error);
     }
   };
 
@@ -196,7 +193,6 @@ export const UserTypeFieldsManager: React.FC<UserTypeFieldsManagerProps> = ({ us
       await duplicateField(field.id);
       setMenuAnchor(null);
     } catch (error) {
-      console.error('Error duplicating field:', error);
     }
   };
 
@@ -205,7 +201,6 @@ export const UserTypeFieldsManager: React.FC<UserTypeFieldsManagerProps> = ({ us
       await toggleFieldStatus(field.id, !field.isActive);
       setMenuAnchor(null);
     } catch (error) {
-      console.error('Error toggling field status:', error);
     }
   };
 

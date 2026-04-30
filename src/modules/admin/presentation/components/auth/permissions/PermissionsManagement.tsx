@@ -130,14 +130,12 @@ const PermissionsManagement: React.FC = () => {
   // FunciÃ³n para cargar permisos desde el backend
   const loadPermissions = async () => {
     if (!isAuthenticated) {
-      console.log('âš ï¸ Usuario no autenticado, saltando carga de permisos');
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-      console.log('ðŸ”„ Cargando permisos desde el backend...');
 
       const filters: PermissionFilters = {
         Page: page,
@@ -159,7 +157,6 @@ const PermissionsManagement: React.FC = () => {
       }
 
       const response = await permissionsService.getAll(filters);
-      console.log('âœ… Permisos cargados:', response);
 
       if (response && response.data) {
         // Mapear los datos del backend al formato del componente
@@ -184,7 +181,6 @@ const PermissionsManagement: React.FC = () => {
         setTotalItems(response.totalRecords || 0);
       }
     } catch (error) {
-      console.error('âŒ Error al cargar permisos:', error);
       setError('Error al cargar los permisos. Por favor, intente nuevamente.');
     } finally {
       setLoading(false);
@@ -252,17 +248,8 @@ const PermissionsManagement: React.FC = () => {
       };
 
       if (dialogMode === 'create') {
-        console.log('ðŸ†• Creando nuevo permiso:', permissionData);
         await permissionsService.create(permissionData);
-        console.log('âœ… Permiso creado exitosamente');
       } else if (dialogMode === 'edit' && selectedPermission) {
-        console.log(
-          'ðŸ“ Actualizando permiso ID:',
-          selectedPermission.id,
-          'con datos:',
-          permissionData
-        );
-        console.log('Selected permission object:', selectedPermission);
 
         const updateData = {
           id: selectedPermission.id,
@@ -270,9 +257,7 @@ const PermissionsManagement: React.FC = () => {
         };
 
         await permissionsService.update(updateData);
-        console.log('âœ… Permiso actualizado exitosamente');
       } else {
-        console.error('Edit mode but no selectedPermission:', { dialogMode, selectedPermission });
         setError('Error: No se pudo identificar el permiso a editar');
         return;
       }
@@ -281,7 +266,6 @@ const PermissionsManagement: React.FC = () => {
       await loadPermissions();
       handleCloseDialog();
     } catch (error) {
-      console.error('âŒ Error al guardar permiso:', error);
       setError('Error al guardar el permiso. Por favor, intente nuevamente.');
     } finally {
       setLoading(false);
@@ -294,14 +278,11 @@ const PermissionsManagement: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        console.log('ðŸ—‘ï¸ Eliminando permiso ID:', selectedPermission.id);
         await permissionsService.delete(selectedPermission.id);
-        console.log('âœ… Permiso eliminado exitosamente');
 
         // Recargar la lista de permisos despuÃ©s de eliminar
         await loadPermissions();
       } catch (error) {
-        console.error('âŒ Error al eliminar permiso:', error);
         setError('Error al eliminar el permiso. Por favor, intente nuevamente.');
       } finally {
         setLoading(false);
