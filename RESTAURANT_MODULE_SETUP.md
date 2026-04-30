@@ -123,7 +123,7 @@ Para que aparezcan los menús del restaurante en la navegación, necesitas:
 - `PATCH /api/orders/{id}/advance-status` - Avanzar estado del pedido
 
 ### Reports (Reportes)
-- `GET /api/reports/sales?fromDate={date}&toDate={date}` - Reporte de ventas
+- `GET /api/Reports/sales?fromDate={date}&toDate={date}` - Reporte de ventas
 
 ## Próximos Pasos
 

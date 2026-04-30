@@ -6,20 +6,33 @@ export interface SalesReport {
   averageTicket: number;
   topDish: TopDishInfo | null;
   salesByCategory: CategorySales[];
-  ordersByStatus: StatusCount[];
+  salesByDish: DishSales[];
+  ordersByStatus?: StatusCount[];
 }
 
 export interface TopDishInfo {
-  dishId: number;
-  dishName: string;
-  totalQuantity: number;
+  dishId?: number;
+  dishName?: string;
+  name?: string;
+  category?: string;
+  totalQuantity?: number;
+  quantitySold?: number;
   totalRevenue: number;
 }
 
 export interface CategorySales {
   category: string;
   totalSales: number;
-  orderCount: number;
+  orderCount?: number;
+  quantitySold: number;
+  percentage: number;
+}
+
+export interface DishSales {
+  dishName: string;
+  category: string;
+  quantitySold: number;
+  totalSales: number;
 }
 
 export interface StatusCount {

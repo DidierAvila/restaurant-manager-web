@@ -43,6 +43,14 @@ function userReducer(state: typeof initialState, action: UserAction) {
     case 'SET_ERROR':
       return { ...state, error: action.payload, isLoading: false };
     case 'SET_USER_CONFIGURATION':
+      if (!action.payload?.user) {
+        return {
+          ...state,
+          isLoading: false,
+          error: 'La configuracion del usuario no tiene un formato valido.',
+        };
+      }
+
       return {
         ...state,
         user: action.payload.user,

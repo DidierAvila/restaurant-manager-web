@@ -3,7 +3,7 @@ import { SalesReport, ReportFilters } from '../../domain/entities/SalesReport';
 
 export class ReportApiAdapter {
   private apiService: ApiService;
-  private baseUrl = '/api/Reports';
+  private salesReportUrl = '/api/Reports/sales';
 
   constructor() {
     this.apiService = new ApiService();
@@ -14,7 +14,7 @@ export class ReportApiAdapter {
     params.append('fromDate', filters.fromDate);
     params.append('toDate', filters.toDate);
 
-    const url = `${this.baseUrl}/sales?${params.toString()}`;
+    const url = `${this.salesReportUrl}?${params.toString()}`;
     return await this.apiService.get<SalesReport>(url);
   }
 }

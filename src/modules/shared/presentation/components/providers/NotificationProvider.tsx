@@ -5,6 +5,7 @@
 
 'use client';
 import { Alert, AlertColor, Snackbar } from '@mui/material';
+import { SnackbarProvider } from 'notistack';
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 
 interface Notification {
@@ -63,25 +64,27 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
   return (
     <NotificationContext.Provider value={{ showNotification, hideNotification }}>
-      {children}
-      {notifications.map((notification) => (
-        <Snackbar
-          key={notification.id}
-          open={true}
-          autoHideDuration={notification.duration}
-          onClose={() => handleClose(notification.id)}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-          <Alert
+      <SnackbarProvider maxSnack={3} autoHideDuration={6000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        {children}
+        {notifications.map((notification) => (
+          <Snackbar
+            key={notification.id}
+            open={true}
+            autoHideDuration={notification.duration}
             onClose={() => handleClose(notification.id)}
-            severity={notification.type}
-            variant="filled"
-            sx={{ width: '100%' }}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            {notification.message}
-          </Alert>
-        </Snackbar>
-      ))}
+            <Alert
+              onClose={() => handleClose(notification.id)}
+              severity={notification.type}
+              variant="filled"
+              sx={{ width: '100%' }}
+            >
+              {notification.message}
+            </Alert>
+          </Snackbar>
+        ))}
+      </SnackbarProvider>
     </NotificationContext.Provider>
   );
 };

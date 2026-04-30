@@ -27,8 +27,19 @@ export class AuthPermissionService {
       backendApiService.setAuthToken(token);
     }
 
-    const response = await backendApiService.get<UserConfigurationResponse>('/Api/Auth/me');
-    return response.data;
+    const response = await backendApiService.get<UserConfigurationResponse | UserConfigurationData>(
+      '/Api/Auth/me'
+    );
+
+    if ('user' in response) {
+      return response;
+    }
+
+    if (response.data) {
+      return response.data;
+    }
+
+    throw new Error('La respuesta de configuracion de usuario no tiene un formato valido.');
   }
 
   /**

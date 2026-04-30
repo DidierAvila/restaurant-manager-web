@@ -13,6 +13,8 @@ export interface ApiResponse<T = unknown> {
   errors?: string[];
 }
 
+type OperationResultPayload = Record<string, unknown>;
+
 export interface PaginatedResponse<T = unknown> {
   data: T[];
   totalRecords: number;
@@ -128,6 +130,108 @@ export class ApiService {
     return this.defaultHeaders['Authorization']?.replace('Bearer ', '') || null;
   }
 
+  private isRecord(value: unknown): value is OperationResultPayload {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+  }
+
+  private getBooleanFlag(payload: OperationResultPayload, keys: string[]): boolean | undefined {
+    for (const key of keys) {
+      if (typeof payload[key] === 'boolean') {
+        return payload[key] as boolean;
+      }
+    }
+
+    return undefined;
+  }
+
+  private getResultValue(payload: OperationResultPayload): unknown {
+    if ('data' in payload) return payload.data;
+    if ('value' in payload) return payload.value;
+    if ('result' in payload) return payload.result;
+    return undefined;
+  }
+
+  private getErrorMessage(payload: OperationResultPayload, fallback: string): string {
+    const directMessage = payload.message || payload.errorMessage || payload.title || payload.detail;
+    if (typeof directMessage === 'string' && directMessage.trim()) {
+      return directMessage;
+    }
+
+    const error = payload.error;
+    if (typeof error === 'string' && error.trim()) {
+      return error;
+    }
+
+    if (this.isRecord(error)) {
+      const nestedMessage = error.message || error.description || error.title || error.code;
+      if (typeof nestedMessage === 'string' && nestedMessage.trim()) {
+        return nestedMessage;
+      }
+    }
+
+    return fallback;
+  }
+
+  private getErrorList(payload: OperationResultPayload): string[] {
+    const errors = payload.errors || payload.validationErrors || payload.details;
+
+    if (Array.isArray(errors)) {
+      return errors
+        .map((error) => {
+          if (typeof error === 'string') return error;
+          if (this.isRecord(error)) return this.getErrorMessage(error, '');
+          return '';
+        })
+        .filter(Boolean);
+    }
+
+    if (this.isRecord(errors)) {
+      return Object.values(errors)
+        .flatMap((value) => (Array.isArray(value) ? value : [value]))
+        .filter((value): value is string => typeof value === 'string' && value.trim().length > 0);
+    }
+
+    return [];
+  }
+
+  private unwrapOperationResult<T>(payload: unknown, endpoint: string): T {
+    if (!this.isRecord(payload)) {
+      return payload as T;
+    }
+
+    if (
+      typeof payload.code === 'string' &&
+      typeof payload.message === 'string' &&
+      !('data' in payload) &&
+      !('value' in payload) &&
+      !('result' in payload)
+    ) {
+      throw new ApiError(payload.message, 400, this.getErrorList(payload), endpoint, payload);
+    }
+
+    const success = this.getBooleanFlag(payload, ['success', 'isSuccess', 'succeeded', 'ok']);
+    const failure = this.getBooleanFlag(payload, ['failure', 'isFailure', 'failed']);
+    const isOperationResult = success !== undefined || failure !== undefined;
+
+    if (!isOperationResult) {
+      return payload as T;
+    }
+
+    const operationSucceeded = success ?? !failure;
+    if (!operationSucceeded) {
+      throw new ApiError(
+        this.getErrorMessage(payload, 'La operacion no se pudo completar.'),
+        400,
+        this.getErrorList(payload),
+        endpoint,
+        payload
+      );
+    }
+
+    const value = this.getResultValue(payload);
+    return (value === undefined ? {} : value) as T;
+  }
+
   /**
    * Parsea la respuesta de error del servidor
    */
@@ -145,10 +249,10 @@ export class ApiService {
         }
 
         // Si el backend envÃ­a un formato estructurado
-        if (errorData.message || errorData.error || errorData.title) {
+        if (errorData.message || errorData.error || errorData.title || errorData.errors) {
           return {
-            message: errorData.message || errorData.error || errorData.title,
-            errors: errorData.errors || errorData.details,
+            message: this.getErrorMessage(errorData, response.statusText || 'Error desconocido'),
+            errors: this.getErrorList(errorData),
             ...errorData,
           };
         }
@@ -181,7 +285,13 @@ export class ApiService {
    */
   private buildURL(endpoint: string): string {
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    return `${this.baseURL}${cleanEndpoint}`;
+    const cleanBaseURL = this.baseURL.replace(/\/$/, '');
+
+    if (cleanBaseURL.toLowerCase().endsWith('/api') && cleanEndpoint.toLowerCase().startsWith('/api/')) {
+      return `${cleanBaseURL}${cleanEndpoint.slice(4)}`;
+    }
+
+    return `${cleanBaseURL}${cleanEndpoint}`;
   }
 
   /**
@@ -236,13 +346,14 @@ export class ApiService {
       }
 
       // Intentar parsear el JSON
+      let data: unknown;
       try {
-        const data = JSON.parse(responseText);
-        return data;
+        data = JSON.parse(responseText);
       } catch {
-        // Si falla el parsing pero la respuesta fue exitosa, retornar objeto vacÃ­o
         return {} as T;
       }
+
+      return this.unwrapOperationResult<T>(data, endpoint);
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;
@@ -600,3 +711,4 @@ export const api = {
 };
 
 export default apiService;
+

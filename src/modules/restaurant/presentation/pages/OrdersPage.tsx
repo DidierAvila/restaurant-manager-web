@@ -17,6 +17,7 @@ import {
   MenuItem,
   Divider,
   CircularProgress,
+  Alert,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useForm } from 'react-hook-form';
@@ -33,6 +34,7 @@ export const OrdersPage: React.FC = () => {
     pagination,
     loading,
     itemsLoading,
+    error,
     createOrder,
     updateOrder,
     deleteOrder,
@@ -261,6 +263,7 @@ export const OrdersPage: React.FC = () => {
           </DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
+              {error && <Alert severity="error">{error}</Alert>}
               <OrderFieldsManager
                 control={control}
                 errors={errors}
