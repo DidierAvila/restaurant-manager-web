@@ -4,6 +4,8 @@ Aplicación web frontend para el sistema de gestión del restaurante **El Buen S
 
 Construida con Next.js, TypeScript, Material UI v7 y arquitectura modular inspirada en Domain-Driven Design (DDD).
 
+Documento de analisis de còdigo legacy /EVALUACION_TECNICA.txt
+
 ## Documentación
 
 ### General
@@ -13,6 +15,7 @@ Construida con Next.js, TypeScript, Material UI v7 y arquitectura modular inspir
 - [Guía de Desarrollo](./docs/GUIA_DESARROLLO.md) - Guía para nuevos desarrolladores.
 - [Estándares de Código](./docs/ESTANDARES_CODIGO.md) - Convenciones y buenas prácticas.
 - [Configuración del Módulo Restaurante](./RESTAURANT_MODULE_SETUP.md) - Detalles del módulo principal.
+-
 
 ### Módulos
 
@@ -24,18 +27,18 @@ Construida con Next.js, TypeScript, Material UI v7 y arquitectura modular inspir
 
 ## Tecnologías
 
-| Tecnología | Versión | Uso |
-|---|---|---|
-| Next.js | 15.5.2 | Framework principal con App Router |
-| React | 19.1.1 | UI base |
-| TypeScript | 5.9.2 | Tipado estático |
-| Material UI | 7.3.2 | Componentes de interfaz |
-| MUI X Data Grid | 8.11.0 | Tablas de datos con paginación servidor |
-| MUI Icons | 7.3.2 | Iconografía (incluye íconos de restaurante) |
-| NextAuth.js | 4.24.11 | Autenticación con credenciales |
-| React Hook Form | 7.63.0 | Manejo de formularios |
-| date-fns | 4.1.0 | Manejo de fechas |
-| Notistack | 3.0.2 | Notificaciones |
+| Tecnología      | Versión | Uso                                         |
+| --------------- | ------- | ------------------------------------------- |
+| Next.js         | 15.5.2  | Framework principal con App Router          |
+| React           | 19.1.1  | UI base                                     |
+| TypeScript      | 5.9.2   | Tipado estático                             |
+| Material UI     | 7.3.2   | Componentes de interfaz                     |
+| MUI X Data Grid | 8.11.0  | Tablas de datos con paginación servidor     |
+| MUI Icons       | 7.3.2   | Iconografía (incluye íconos de restaurante) |
+| NextAuth.js     | 4.24.11 | Autenticación con credenciales              |
+| React Hook Form | 7.63.0  | Manejo de formularios                       |
+| date-fns        | 4.1.0   | Manejo de fechas                            |
+| Notistack       | 3.0.2   | Notificaciones                              |
 
 ## Requisitos Previos
 
@@ -92,17 +95,17 @@ La aplicación estará disponible en `http://localhost:3001`.
 
 ## Scripts
 
-| Comando | Descripción |
-|---|---|
-| `npm run dev` | Inicia el servidor de desarrollo en el puerto 3001 |
-| `npm run build` | Construye la aplicación para producción |
-| `npm start` | Inicia el servidor de producción |
-| `npm run type-check` | Valida tipos de TypeScript |
-| `npm run lint` | Ejecuta ESLint |
-| `npm run lint:fix` | Corrige problemas de ESLint automáticamente |
-| `npm run format` | Formatea archivos con Prettier |
-| `npm run format:check` | Verifica el formato sin modificar archivos |
-| `npm run check-all` | Ejecuta type-check, lint y format:check |
+| Comando                | Descripción                                        |
+| ---------------------- | -------------------------------------------------- |
+| `npm run dev`          | Inicia el servidor de desarrollo en el puerto 3001 |
+| `npm run build`        | Construye la aplicación para producción            |
+| `npm start`            | Inicia el servidor de producción                   |
+| `npm run type-check`   | Valida tipos de TypeScript                         |
+| `npm run lint`         | Ejecuta ESLint                                     |
+| `npm run lint:fix`     | Corrige problemas de ESLint automáticamente        |
+| `npm run format`       | Formatea archivos con Prettier                     |
+| `npm run format:check` | Verifica el formato sin modificar archivos         |
+| `npm run check-all`    | Ejecuta type-check, lint y format:check            |
 
 ## Estructura del Proyecto
 
@@ -169,25 +172,25 @@ El módulo `restaurant` contiene las funcionalidades principales del sistema:
 
 Rutas:
 
-| Ruta | Descripción |
-|---|---|
-| `/restaurant/dishes` | Gestión de platos |
-| `/restaurant/orders` | Gestión de pedidos |
+| Ruta                  | Descripción        |
+| --------------------- | ------------------ |
+| `/restaurant/dishes`  | Gestión de platos  |
+| `/restaurant/orders`  | Gestión de pedidos |
 | `/restaurant/reports` | Reportes de ventas |
 
 ### Iconos del módulo en el menú
 
 El `MainLayout` resuelve íconos dinámicamente desde la configuración de navegación del backend. Claves disponibles para el módulo restaurante:
 
-| Clave | Ícono |
-|---|---|
-| `Restaurant`, `restaurant`, `restaurante` | RestaurantIcon |
-| `DinnerDining`, `DinnerDiningIcon`, `dinner-dining` | DinnerDiningIcon |
-| `MenuBook`, `MenuBookIcon`, `menu-book`, `carta` | MenuBookIcon |
-| `dishes`, `platos` | FastfoodIcon |
-| `menu` | RestaurantMenuIcon |
-| `orders`, `pedidos` | ReceiptIcon |
-| `sales-report`, `reporte-ventas` | AssessmentIcon |
+| Clave                                               | Ícono              |
+| --------------------------------------------------- | ------------------ |
+| `Restaurant`, `restaurant`, `restaurante`           | RestaurantIcon     |
+| `DinnerDining`, `DinnerDiningIcon`, `dinner-dining` | DinnerDiningIcon   |
+| `MenuBook`, `MenuBookIcon`, `menu-book`, `carta`    | MenuBookIcon       |
+| `dishes`, `platos`                                  | FastfoodIcon       |
+| `menu`                                              | RestaurantMenuIcon |
+| `orders`, `pedidos`                                 | ReceiptIcon        |
+| `sales-report`, `reporte-ventas`                    | AssessmentIcon     |
 
 ## Módulo Administrativo
 
@@ -202,10 +205,10 @@ El módulo `admin` gestiona la configuración operativa del sistema:
 
 El sistema incluye dos usuarios de prueba precargados en el backend:
 
-| Usuario | Contraseña | Rol |
-|---|---|---|
-| admin@gmail.com | admin123 | Administrador |
-| usuario@gmail.com | usuario123 | Empleado |
+| Usuario           | Contraseña | Rol           |
+| ----------------- | ---------- | ------------- |
+| admin@gmail.com   | admin123   | Administrador |
+| usuario@gmail.com | usuario123 | Empleado      |
 
 > Estos usuarios son solo para entornos de desarrollo y pruebas. Deben ser removidos o cambiados antes de pasar a producción.
 
