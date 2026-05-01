@@ -4,6 +4,7 @@
  */
 
 import { ApiError } from '@/modules/shared/application/services/api';
+import { getErrorMessage } from '@/modules/shared/application/services/errorMessages';
 import { useNotificationContext } from '@/modules/shared/presentation/components/providers/NotificationProvider';
 import { signOut } from 'next-auth/react';
 import { useCallback, useState } from 'react';
@@ -50,14 +51,30 @@ export function useApiError(): UseApiErrorReturn {
         showNotification('Error de conexión. Verifica tu conexiÃ³n a internet.', 'error');
       } else if (apiError.isClientError) {
         // Errores 4xx - mostrar mensaje especÃ­fico del servidor
-        showNotification(apiError.message || 'Error en la solicitud.', 'error');
+
+        // Si hay errores de validación, mostrar el primero
+        if (apiError.validationErrors && Object.keys(apiError.validationErrors).length > 0) {
+          const firstField = Object.keys(apiError.validationErrors)[0];
+          const firstError = apiError.validationErrors[firstField][0];
+          showNotification(firstError || apiError.message || 'Error de validación.', 'error');
+        } else {
+          // Usar traducción del código si está disponible, sino usar el mensaje del backend
+          const translatedMessage = getErrorMessage(apiError.code, apiError.message);
+          showNotification(translatedMessage || 'Error en la solicitud.', 'error');
+        }
       } else {
-        // Error genÃ©rico
-        showNotification(apiError.message || 'Ha ocurrido un error inesperado.', 'error');
+        // Error genÃ©rico - intentar usar traducción si hay código
+        const translatedMessage = getErrorMessage(
+          apiError.code,
+          apiError.message || 'Ha ocurrido un error inesperado.'
+        );
+        showNotification(translatedMessage, 'error');
       }
 
-      // Log del error para debugging
-      // API Error logged
+      // Log del error para debugging (incluye el código de error si existe)
+      if (apiError.code) {
+        console.error(`API Error [${apiError.code}]:`, apiError);
+      }
     },
     [showNotification]
   );
@@ -70,12 +87,21 @@ export function useApiError(): UseApiErrorReturn {
         const genericError = new ApiError(
           unknownError.message || 'Error desconocido',
           0,
+          undefined,
           [],
+          undefined,
           'unknown'
         );
         handleApiError(genericError);
       } else {
-        const genericError = new ApiError('Ha ocurrido un error inesperado', 0, [], 'unknown');
+        const genericError = new ApiError(
+          'Ha ocurrido un error inesperado',
+          0,
+          undefined,
+          [],
+          undefined,
+          'unknown'
+        );
         handleApiError(genericError);
       }
     },

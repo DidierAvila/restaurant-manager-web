@@ -48,21 +48,27 @@ const BACKEND_API_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://loca
  */
 export class ApiError extends Error {
   status: number;
+  code?: string;
   errors?: string[];
+  validationErrors?: Record<string, string[]>;
   endpoint?: string;
   details?: Record<string, unknown>;
 
   constructor(
     message: string,
     status = 500,
+    code?: string,
     errors?: string[],
+    validationErrors?: Record<string, string[]>,
     endpoint?: string,
     details?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
+    this.code = code;
     this.errors = errors;
+    this.validationErrors = validationErrors;
     this.endpoint = endpoint;
     this.details = details;
   }
@@ -206,7 +212,15 @@ export class ApiService {
       !('value' in payload) &&
       !('result' in payload)
     ) {
-      throw new ApiError(payload.message, 400, this.getErrorList(payload), endpoint, payload);
+      throw new ApiError(
+        payload.message,
+        400,
+        payload.code as string | undefined,
+        this.getErrorList(payload),
+        undefined,
+        endpoint,
+        payload
+      );
     }
 
     const success = this.getBooleanFlag(payload, ['success', 'isSuccess', 'succeeded', 'ok']);
@@ -222,7 +236,9 @@ export class ApiService {
       throw new ApiError(
         this.getErrorMessage(payload, 'La operacion no se pudo completar.'),
         400,
+        undefined,
         this.getErrorList(payload),
+        undefined,
         endpoint,
         payload
       );
@@ -248,7 +264,18 @@ export class ApiService {
           return { message: errorData };
         }
 
-        // Si el backend envÃ­a un formato estructurado
+        // NUEVO: Formato del patrón Result con Code, Message y Errors
+        if (errorData.Code && errorData.Message) {
+          return {
+            code: errorData.Code,
+            message: errorData.Message,
+            errors: this.getErrorList(errorData),
+            validationErrors: errorData.Errors, // Errores de validación por campo
+            ...errorData,
+          };
+        }
+
+        // Si el backend envÃ­a un formato estructurado (retrocompatibilidad)
         if (errorData.message || errorData.error || errorData.title || errorData.errors) {
           return {
             message: this.getErrorMessage(errorData, response.statusText || 'Error desconocido'),
@@ -320,7 +347,9 @@ export class ApiService {
         throw new ApiError(
           (errorData.message as string) || `HTTP ${response.status}: ${response.statusText}`,
           response.status,
-          errorData.errors as string[],
+          errorData.code as string | undefined,
+          errorData.errors as string[] | undefined,
+          errorData.validationErrors as Record<string, string[]> | undefined,
           endpoint,
           errorData
         );
@@ -366,7 +395,9 @@ export class ApiService {
       throw new ApiError(
         `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         0,
+        undefined,
         [],
+        undefined,
         endpoint
       );
     }
@@ -387,7 +418,7 @@ export class ApiService {
    */
   async post<T>(
     endpoint: string,
-    data?: Record<string, unknown> | FormData,
+    data?: unknown,
     config?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
@@ -402,7 +433,7 @@ export class ApiService {
    */
   async put<T>(
     endpoint: string,
-    data?: Record<string, unknown> | FormData,
+    data?: unknown,
     config?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
@@ -417,7 +448,7 @@ export class ApiService {
    */
   async patch<T>(
     endpoint: string,
-    data?: Record<string, unknown> | FormData,
+    data?: unknown,
     config?: RequestInit
   ): Promise<T> {
     return this.request<T>(endpoint, {
@@ -494,7 +525,9 @@ export class ApiService {
       throw new ApiError(
         errorText || `HTTP ${response.status}: ${response.statusText}`,
         response.status,
+        undefined,
         [],
+        undefined,
         endpoint
       );
     }
@@ -612,7 +645,7 @@ export class AuthService {
           message: data.message || 'Login exitoso',
         };
       } catch {
-        throw new ApiError('Respuesta inesperada del servidor', 500, [], '/Auth/Login');
+        throw new ApiError('Respuesta inesperada del servidor', 500, undefined, [], undefined, '/Auth/Login');
       }
     } catch (error) {
       // Error durante el proceso de login
@@ -627,7 +660,9 @@ export class AuthService {
       throw new ApiError(
         `Error de conexión con el servidor: ${errorMessage}`,
         500,
+        undefined,
         [],
+        undefined,
         '/Auth/Login',
         error as Record<string, unknown>
       );

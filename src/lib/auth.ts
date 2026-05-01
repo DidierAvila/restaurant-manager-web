@@ -40,6 +40,9 @@ declare module 'next-auth' {
 // Extendemos el tipo JWT para incluir informaciÃ³n del usuario
 declare module 'next-auth/jwt' {
   interface JWT {
+    id: string;
+    role: string;
+    status: string;
     userId: string;
     userName: string;
     userEmail: string;
@@ -118,6 +121,9 @@ async function validateUserFromToken(token: string): Promise<JWT | null> {
     const payload = JSON.parse(payloadJson);
 
     const jwtData: JWT = {
+      id: payload.userId || payload.sub || '',
+      role: payload.userTypeName || payload.role || 'employee',
+      status: payload.status || 'active',
       userId: payload.userId || payload.sub || '',
       userName: payload.userName || payload.name || '',
       userEmail: payload.userEmail || payload.email || '',
@@ -186,8 +192,8 @@ export const authOptions: NextAuthOptions = {
           }
 
           return null;
-        } catch (error: any) {
-          throw new Error(error.message || 'Error de autenticaciÃ³n');
+        } catch (error: unknown) {
+          throw new Error(error instanceof Error ? error.message : 'Error de autenticación');
         }
       },
     }),
@@ -199,24 +205,20 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user, account }) {
-      // Persistir datos del usuario en el token JWT
       if (user) {
-        // Mapear datos del usuario (enriquecidos en signIn) al token
-        token.id = (user as any).id;
-        token.email = (user as any).email;
-        token.name = (user as any).name;
-        token.role = (user as any).role;
-        token.status = (user as any).status;
+        token.id = user.id;
+        token.email = user.email ?? '';
+        token.name = user.name ?? '';
+        token.role = user.role;
+        token.status = user.status;
 
-        // Si el proveedor es Google, adjuntar metadatos del provider
-        if (account && account.provider === 'google') {
-          token.idToken = (account as any).id_token;
+        if (account?.provider === 'google') {
+          token.idToken = account.id_token ?? undefined;
           token.provider = account.provider;
         }
 
-        // Persistir el accessToken si estÃ¡ presente (credentials o enriquecido en signIn Google)
-        if ((user as any).accessToken) {
-          token.accessToken = (user as any).accessToken;
+        if (user.accessToken) {
+          token.accessToken = user.accessToken;
         }
       }
       return token;

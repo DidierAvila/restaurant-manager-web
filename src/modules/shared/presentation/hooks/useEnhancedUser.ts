@@ -7,7 +7,7 @@
 'use client';
 
 import { AuthPermissionService } from '@/modules/shared/application/services/authService';
-import { UserConfigurationData } from '@/modules/shared/domain/entities/auth';
+import { NavigationItem, PortalConfiguration, Role, UserConfigurationData } from '@/modules/shared/domain/entities/auth';
 import { useSession } from 'next-auth/react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -27,9 +27,9 @@ export interface EnhancedUser {
 
   // Datos adicionales del endpoint /me
   avatar?: string;
-  portalConfiguration?: any;
-  roles?: any[];
-  navigation?: any[];
+  portalConfiguration?: PortalConfiguration;
+  roles?: Role[];
+  navigation?: NavigationItem[];
 
   // Datos derivados/computados
   displayName: string; // Nombre preferido para mostrar
@@ -92,32 +92,28 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
   // Extraer datos del token JWT
   const tokenData = session?.accessToken ? extractTokenData(session.accessToken) : null;
 
-  // Constantes para circuit breaker
   const MAX_RETRY_ATTEMPTS = 3;
-  const RETRY_DELAY = 5000; // 5 segundos
 
   /**
    * Detectar si un error es de conexiÃ³n de red (NO de permisos/autorizaciÃ³n)
    */
-  function isNetworkError(error: any): boolean {
-    // Verificar diferentes tipos de errores de red
-    if (!error) return false;
+  function isNetworkError(error: unknown): boolean {
+    if (!error || typeof error !== 'object') return false;
+    const e = error as Record<string, unknown>;
 
-    // âŒ NO es error de red si tiene status HTTP vÃ¡lido (incluyendo 401, 403, etc.)
-    if (error.status && error.status >= 400 && error.status < 600) {
-      return false;
-    }
+    if (typeof e.status === 'number' && e.status >= 400 && e.status < 600) return false;
 
-    // âœ… SÃ es error de red: problemas de conectividad
-    if (error.name === 'TypeError' && error.message.includes('fetch')) return true;
-    if (error.message?.includes('Failed to fetch')) return true;
-    if (error.message?.includes('Network request failed')) return true;
-    if (error.message?.includes('internet')) return true;
-    if (error.message?.includes('conexión')) return true;
+    const name = e.name as string | undefined;
+    const message = e.message as string | undefined;
+    const code = e.code as string | undefined;
 
-    // Errores de timeout o falta total de respuesta
-    if (error.code === 'NETWORK_ERROR') return true;
-    if (error.status === 0) return true; // Sin respuesta del servidor
+    if (name === 'TypeError' && message?.includes('fetch')) return true;
+    if (message?.includes('Failed to fetch')) return true;
+    if (message?.includes('Network request failed')) return true;
+    if (message?.includes('internet')) return true;
+    if (message?.includes('conexión')) return true;
+    if (code === 'NETWORK_ERROR') return true;
+    if (e.status === 0) return true;
 
     return false;
   }
@@ -178,15 +174,15 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
       setConnectionFailed(false); // Reset en caso de Ã©xito
       setRetryCount(0); // Reset contador
       setCircuitBreakerOpen(false); // Cerrar circuit breaker en caso de Ã©xito
-    } catch (error: any) {
+    } catch (error: unknown) {
 
       // ðŸ” ERRORES DE AUTORIZACIÃ“N/PERMISOS (401, 403) - No reintentar
-      if (error?.status === 401) {
+      if ((error as Record<string,unknown>)?.status === 401) {
         setMeError(null); // No mostrar como error, es comportamiento esperado
         setConnectionFailed(false);
         setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
         // NO incrementar retryCount, NO activar circuit breaker
-      } else if (error?.status === 403) {
+      } else if ((error as Record<string,unknown>)?.status === 403) {
         setMeError(null); // No mostrar como error, es comportamiento esperado
         setConnectionFailed(false);
         setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
@@ -233,71 +229,7 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
     const shouldLoadMeData = isAuthenticated && tokenData && !meData && !meLoading && !meAttempted;
 
     if (shouldLoadMeData) {
-
-      // Llamar directamente a loadMeData sin depender del callback
-      const loadData = async () => {
-        if (!session?.accessToken || session.accessToken.startsWith('oauth-temp-')) {
-          return;
-        }
-
-        if (!tokenData) {
-          return;
-        }
-
-        setMeLoading(true);
-        setMeError(null);
-        setMeAttempted(true);
-
-        try {
-          const data = await AuthPermissionService.getCurrentUserConfiguration(
-            session?.accessToken
-          );
-          setMeData(data);
-          setConnectionFailed(false);
-          setRetryCount(0);
-          setCircuitBreakerOpen(false);
-        } catch (error: any) {
-
-          // ðŸ” ERRORES DE AUTORIZACIÃ“N/PERMISOS (401, 403) - No reintentar
-          if (error?.status === 401) {
-            setMeError(null); // No mostrar como error, es comportamiento esperado
-            setConnectionFailed(false);
-            setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
-            // NO incrementar retryCount, NO activar circuit breaker
-          } else if (error?.status === 403) {
-            setMeError(null); // No mostrar como error, es comportamiento esperado
-            setConnectionFailed(false);
-            setMeAttempted(true); // âœ… Marcar como intentado para evitar bucles
-            // NO incrementar retryCount, NO activar circuit breaker
-          }
-          // ðŸŒ ERRORES DE RED - SÃ­ reintentar con circuit breaker
-          else if (isNetworkError(error)) {
-            setConnectionFailed(true);
-
-            const newRetryCount = retryCount + 1;
-            setRetryCount(newRetryCount);
-
-            if (newRetryCount >= MAX_RETRY_ATTEMPTS) {
-              setCircuitBreakerOpen(true);
-              setMeError('Sin conexión a internet. La aplicaciÃ³n funcionarÃ¡ con datos bÃ¡sicos.');
-            } else {
-              setMeError('Error de conexión. Verifica tu conexión a internet.');
-            }
-          }
-          // ðŸ”§ OTROS ERRORES DEL SERVIDOR (4xx, 5xx) - No reintentar
-          else {
-            setMeError('Error del servidor al cargar configuraciÃ³n adicional');
-            setConnectionFailed(false);
-            // NO incrementar retryCount, NO activar circuit breaker
-          }
-
-          setMeData(null);
-        } finally {
-          setMeLoading(false);
-        }
-      };
-
-      loadData();
+      loadMeData();
     }
   }, [
     isAuthenticated,
@@ -306,9 +238,8 @@ export function useEnhancedUser(): UseEnhancedUserReturn {
     meLoading,
     meAttempted,
     circuitBreakerOpen,
-    session?.accessToken,
-    retryCount,
-  ]);
+    loadMeData,
+  ]);;
 
   /**
    * Función para refrescar datos del usuario

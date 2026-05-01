@@ -160,11 +160,9 @@ export const DishesPage: React.FC = () => {
     fetchDishes({ ...buildFilters(), page: 1, pageSize: newPageSize });
   };
 
-  // Cargar datos iniciales
   useEffect(() => {
     fetchDishes({ page: 1, pageSize: 10 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchDishes]);
 
   return (
     <Box>

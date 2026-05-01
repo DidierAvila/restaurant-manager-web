@@ -19,13 +19,10 @@ export class UserFieldsService {
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
   private static async updateUserWithRequiredFields(
-    userId: string,
-    updatedFields: UserField[]
+    _userId: string,
+    _updatedFields: UserField[]
   ): Promise<void> {
-    // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
-    throw new Error(
-      'Funcionalidad de campos dinÃ¡micos temporalmente deshabilitada durante la migraciÃ³n'
-    );
+    // Pendiente de implementación con useUsers hook
 
     /*
     // TODO: Implementar lÃ³gica para obtener usuario por ID usando useUsers hook
@@ -37,7 +34,7 @@ export class UserFieldsService {
    * Obtiene todos los campos definidos para un Usuario desde su additionalData
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
-  static async getUserFields(userId: string): Promise<UserField[]> {
+  static async getUserFields(_userId: string): Promise<UserField[]> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
     return [];
 
@@ -50,11 +47,18 @@ export class UserFieldsService {
    * Obtiene la configuraciÃ³n completa de campos para un Usuario
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
-  static async getUserFieldsConfig(userId: string): Promise<UserFieldsConfig> {
-    // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
-    throw new Error(
-      'Funcionalidad de campos dinÃ¡micos temporalmente deshabilitada durante la migraciÃ³n'
-    );
+  static async getUserFieldsConfig(_userId: string): Promise<UserFieldsConfig> {
+    return {
+      userId: _userId,
+      userName: '',
+      userEmail: '',
+      userTypeId: '',
+      userTypeName: '',
+      fields: [],
+      isActive: false,
+      totalFields: 0,
+      lastUpdated: new Date(),
+    };
 
     /*
     // TODO: Implementar lÃ³gica para obtener configuraciÃ³n de campos usando useUsers hook
@@ -89,7 +93,7 @@ export class UserFieldsService {
    * Crea un nuevo campo dinÃ¡mico para un Usuario
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
-  static async createUserField(fieldData: CreateUserFieldDto): Promise<ApiResponse<UserField>> {
+  static async createUserField(_fieldData: CreateUserFieldDto): Promise<ApiResponse<UserField>> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
     return {
       success: false,
@@ -103,8 +107,8 @@ export class UserFieldsService {
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
   static async updateUserField(
-    userId: string,
-    fieldData: UpdateUserFieldDto
+    _userId: string,
+    _fieldData: UpdateUserFieldDto
   ): Promise<ApiResponse<UserField>> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
     return {
@@ -118,7 +122,7 @@ export class UserFieldsService {
    * Elimina un campo de un Usuario
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
-  static async deleteUserField(userId: string, fieldId: string): Promise<ApiResponse<boolean>> {
+  static async deleteUserField(_userId: string, _fieldId: string): Promise<ApiResponse<boolean>> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
     return {
       success: false,
@@ -132,8 +136,8 @@ export class UserFieldsService {
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
   static async reorderUserFields(
-    userId: string,
-    fieldIds: string[]
+    _userId: string,
+    _fieldIds: string[]
   ): Promise<ApiResponse<UserField[]>> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
     return {
@@ -148,9 +152,9 @@ export class UserFieldsService {
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
   static async toggleUserFieldStatus(
-    userId: string,
-    fieldId: string,
-    isActive: boolean
+    _userId: string,
+    _fieldId: string,
+    _isActive: boolean
   ): Promise<ApiResponse<UserField>> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
     return {
@@ -165,9 +169,9 @@ export class UserFieldsService {
    * TODO: Migrar a usar useUsers hook cuando se implemente la funcionalidad de campos dinÃ¡micos
    */
   static async duplicateUserField(
-    userId: string,
-    fieldId: string,
-    newName?: string
+    _userId: string,
+    _fieldId: string,
+    _newName?: string
   ): Promise<ApiResponse<UserField>> {
     // TODO: Implementar usando el hook useUsers cuando se requiera esta funcionalidad
     return {
@@ -227,7 +231,7 @@ export function createSelectFieldDto(
     description?: string;
   }
 ): CreateUserFieldDto {
-  const { options, ...rest } = config;
+  const { options } = config;
 
   return {
     userId,

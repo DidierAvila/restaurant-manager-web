@@ -133,7 +133,9 @@ export const OrdersPage: React.FC = () => {
   };
 
   const handleView = (order: Order) => {
-    void handleOpenViewDialog(order);
+    handleOpenViewDialog(order).catch(() => {
+      // error visible via el estado `error` del hook useOrders
+    });
   };
 
   const handleDelete = async (id: number) => {
@@ -186,11 +188,9 @@ export const OrdersPage: React.FC = () => {
     fetchOrders({ ...buildFilters(), page: 1, pageSize: newPageSize });
   };
 
-  // Cargar datos iniciales
   useEffect(() => {
     fetchOrders({ page: 1, pageSize: 10 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchOrders]);
 
   return (
     <Box>

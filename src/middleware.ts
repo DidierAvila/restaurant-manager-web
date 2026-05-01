@@ -51,17 +51,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl);
   }
 
-  // âš ï¸ BLOQUEAR: Usuarios inactivos (solo si el token tiene datos vÃ¡lidos)
-  // Si el token existe pero los datos estÃ¡n vacÃ­os, permitir acceso para evitar bucles
-  if (token.status && token.status !== 'active' && token.id && token.email) {
+  // Verificar que el token tenga datos mínimos válidos
+  if (!token.id || !token.email) {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
+  }
+
+  // Bloquear usuarios inactivos (token.status se persiste desde auth.ts)
+  if (token.status && token.status !== 'active') {
     const signInUrl = new URL('/auth/signin', request.url);
     signInUrl.searchParams.set('error', 'AccessDenied');
     return NextResponse.redirect(signInUrl);
-  }
-
-  // Si el token existe pero los datos estÃ¡n vacÃ­os, permitir acceso
-  if (token && (!token.id || !token.email)) {
-    return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
 
   // ðŸ‘‘ CONTROL DE ROLES: Rutas administrativas

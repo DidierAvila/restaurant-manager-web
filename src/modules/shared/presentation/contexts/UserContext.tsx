@@ -6,7 +6,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import { apiService } from '../../application/services/api';
 import { AuthService } from '../../application/services/authService';
 import {
@@ -99,19 +99,21 @@ export function UserProvider({ children }: UserProviderProps) {
     dispatch({ type: 'SET_ERROR', payload: error });
   }, []);
 
+  const loadingRef = useRef(false);
+
   // FunciÃ³n para cargar la configuraciÃ³n del usuario
   const loadUserConfiguration = useCallback(async () => {
     if (!session?.user) return;
 
-    // Evitar llamadas duplicadas si ya se estÃ¡ cargando o ya se cargÃ³
-    if (state.isLoading || state.user) return;
+    // Guardia atómica: useRef evita que re-renders lancen llamadas duplicadas
+    if (loadingRef.current || state.user) return;
 
+    loadingRef.current = true;
     try {
       setLoading(true);
       setError(null);
 
-      // Solo intentar cargar configuraciÃ³n si tenemos un token vÃ¡lido
-      const accessToken = (session as any)?.accessToken;
+      const accessToken = session.accessToken;
       if (!accessToken || accessToken.startsWith('oauth-temp-')) {
         // Usar datos bÃ¡sicos de la sesiÃ³n sin llamar al backend
         // Establecer configuraciÃ³n bÃ¡sica usando el reducer directamente
@@ -160,12 +162,8 @@ export function UserProvider({ children }: UserProviderProps) {
 
       const response = await AuthService.getCurrentUserConfiguration();
       setUserConfiguration(response);
-    } catch (error) {
-      // No llamar handleError para evitar el bucle de sesiÃ³n expirada
-      // Solo establecer el error local
-      setError('Error al cargar la configuraciÃ³n del usuario');
-
-      // Usar configuraciÃ³n bÃ¡sica como fallback
+    } catch {
+      // Cargar configuración básica como fallback para que la app siga funcionando
       dispatch({
         type: 'SET_USER_CONFIGURATION',
         payload: {
@@ -202,9 +200,10 @@ export function UserProvider({ children }: UserProviderProps) {
         },
       });
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
-  }, [session?.user, state.isLoading, state.user, setUserConfiguration, setLoading, setError]);
+  }, [session?.user, session?.accessToken, state.user, setUserConfiguration, setLoading, setError]);
 
   // Efecto para cargar la configuraciÃ³n cuando el usuario se autentica
   useEffect(() => {
@@ -223,11 +222,11 @@ export function UserProvider({ children }: UserProviderProps) {
 
   const getFilteredNavigation = useCallback(
     (navigation: NavigationItem[], requiredPermission = 'read'): NavigationItem[] => {
-      // Usamos el tipo correcto para la funciÃ³n del servicio
+      // AuthService usa su propio NavigationItem con index signature; doble cast necesario
       return AuthService.filterNavigationByPermissions(
-        navigation as any,
+        navigation as unknown as Parameters<typeof AuthService.filterNavigationByPermissions>[0],
         requiredPermission
-      ) as any;
+      ) as unknown as NavigationItem[];
     },
     []
   );

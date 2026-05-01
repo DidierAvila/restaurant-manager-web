@@ -45,11 +45,11 @@ export class DishApiAdapter {
   }
 
   async create(dish: CreateDishDto): Promise<Dish> {
-    return await this.apiService.post<Dish>(this.baseUrl, dish as unknown as Record<string, unknown>);
+    return await this.apiService.post<Dish>(this.baseUrl, dish);
   }
 
   async update(id: number, dish: UpdateDishDto): Promise<Dish> {
-    return await this.apiService.put<Dish>(`${this.baseUrl}/${id}`, dish as unknown as Record<string, unknown>);
+    return await this.apiService.put<Dish>(`${this.baseUrl}/${id}`, dish);
   }
 
   async delete(id: number): Promise<void> {

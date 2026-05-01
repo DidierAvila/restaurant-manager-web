@@ -266,6 +266,7 @@ function SignInContent() {
                 fullWidth
                 type="email"
                 label="Email"
+                placeholder="ejemplo@correo.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}

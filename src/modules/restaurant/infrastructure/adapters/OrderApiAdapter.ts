@@ -48,11 +48,11 @@ export class OrderApiAdapter {
   }
 
   async create(order: CreateOrderDto): Promise<Order> {
-    return await this.apiService.post<Order>(this.baseUrl, order as unknown as Record<string, unknown>);
+    return await this.apiService.post<Order>(this.baseUrl, order);
   }
 
   async update(id: number, order: UpdateOrderDto): Promise<Order> {
-    return await this.apiService.put<Order>(`${this.baseUrl}/${id}`, order as unknown as Record<string, unknown>);
+    return await this.apiService.put<Order>(`${this.baseUrl}/${id}`, order);
   }
 
   async delete(id: number): Promise<void> {
@@ -60,7 +60,7 @@ export class OrderApiAdapter {
   }
 
   async addItem(orderId: number, item: AddOrderItemDto): Promise<Order> {
-    return await this.apiService.post<Order>(`${this.baseUrl}/${orderId}/items`, item as unknown as Record<string, unknown>);
+    return await this.apiService.post<Order>(`${this.baseUrl}/${orderId}/items`, item);
   }
 
   async getItems(orderId: number): Promise<OrderItem[]> {
