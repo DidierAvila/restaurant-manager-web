@@ -1,13 +1,8 @@
-import { ApiService } from '@/modules/shared/application/services/api';
+import { apiService } from '@/modules/shared/application/services/api';
 import { SalesReport, ReportFilters } from '../../domain/entities/SalesReport';
 
 export class ReportApiAdapter {
-  private apiService: ApiService;
   private salesReportUrl = '/api/Reports/sales';
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
 
   async getSalesReport(filters: ReportFilters): Promise<SalesReport> {
     const params = new URLSearchParams();
@@ -15,6 +10,6 @@ export class ReportApiAdapter {
     params.append('toDate', filters.toDate);
 
     const url = `${this.salesReportUrl}?${params.toString()}`;
-    return await this.apiService.get<SalesReport>(url);
+    return await apiService.get<SalesReport>(url);
   }
 }

@@ -1,14 +1,9 @@
-import { ApiService } from '@/modules/shared/application/services/api';
+import { apiService } from '@/modules/shared/application/services/api';
 import { Dish, CreateDishDto, UpdateDishDto } from '../../domain/entities/Dish';
 import { DishFilters, PaginationResponseDto } from '../../domain/value-objects/DishFilters';
 
 export class DishApiAdapter {
-  private apiService: ApiService;
   private baseUrl = '/api/Dishes';
-
-  constructor() {
-    this.apiService = new ApiService();
-  }
 
   async getAll(filters?: DishFilters): Promise<PaginationResponseDto<Dish>> {
     const params = new URLSearchParams();
@@ -29,34 +24,34 @@ export class DishApiAdapter {
     const queryString = params.toString();
     const url = queryString ? `${this.baseUrl}?${queryString}` : this.baseUrl;
 
-    return await this.apiService.get<PaginationResponseDto<Dish>>(url);
+    return await apiService.get<PaginationResponseDto<Dish>>(url);
   }
 
   async getById(id: number): Promise<Dish> {
-    return await this.apiService.get<Dish>(`${this.baseUrl}/${id}`);
+    return await apiService.get<Dish>(`${this.baseUrl}/${id}`);
   }
 
   async getAvailable(): Promise<Dish[]> {
-    return await this.apiService.get<Dish[]>(`${this.baseUrl}/available`);
+    return await apiService.get<Dish[]>(`${this.baseUrl}/available`);
   }
 
   async getByCategory(category: number): Promise<Dish[]> {
-    return await this.apiService.get<Dish[]>(`${this.baseUrl}/category/${category}`);
+    return await apiService.get<Dish[]>(`${this.baseUrl}/category/${category}`);
   }
 
   async create(dish: CreateDishDto): Promise<Dish> {
-    return await this.apiService.post<Dish>(this.baseUrl, dish);
+    return await apiService.post<Dish>(this.baseUrl, dish);
   }
 
   async update(id: number, dish: UpdateDishDto): Promise<Dish> {
-    return await this.apiService.put<Dish>(`${this.baseUrl}/${id}`, dish);
+    return await apiService.put<Dish>(`${this.baseUrl}/${id}`, dish);
   }
 
   async delete(id: number): Promise<void> {
-    return await this.apiService.delete<void>(`${this.baseUrl}/${id}`);
+    return await apiService.delete<void>(`${this.baseUrl}/${id}`);
   }
 
   async toggleAvailability(id: number): Promise<Dish> {
-    return await this.apiService.patch<Dish>(`${this.baseUrl}/${id}/toggle-availability`);
+    return await apiService.patch<Dish>(`${this.baseUrl}/${id}/toggle-availability`);
   }
 }
